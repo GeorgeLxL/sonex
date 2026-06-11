@@ -36,14 +36,8 @@ export function ContactForm() {
           <Input name="company" maxLength={200} placeholder="Acme Inc." />
         </div>
         <div>
-          <Label>Budget</Label>
-          <Select name="budget" defaultValue="">
-            <option value="">Not sure yet</option>
-            <option>Under $10k</option>
-            <option>$10k – $50k</option>
-            <option>$50k – $150k</option>
-            <option>$150k+</option>
-          </Select>
+          <Label>Phone number</Label>
+          <Input name="phone" type="tel" maxLength={50} placeholder="+1 (555) 000-0000" />
         </div>
       </div>
       <div>
@@ -52,6 +46,20 @@ export function ContactForm() {
       </div>
       {/* Honeypot */}
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+      <label className="flex items-start gap-2.5 text-sm text-muted">
+        <input type="checkbox" name="agree" required className="mt-0.5" />
+        <span>
+          By clicking the &ldquo;Send message&rdquo; button, you agree to our{" "}
+          <a href="/terms" target="_blank" rel="noreferrer" className="text-accent hover:underline">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="/privacy" target="_blank" rel="noreferrer" className="text-accent hover:underline">
+            Privacy Policy
+          </a>
+          .
+        </span>
+      </label>
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
       <Button type="submit" disabled={pending}>
         {pending ? "Sending…" : "Send message"}

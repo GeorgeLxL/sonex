@@ -60,6 +60,8 @@ export interface Profile {
   bio: string;
   birthday: string | null;
   timezone: string;
+  work_start: string; // "HH:MM:SS" local working hours
+  work_end: string;   // window may cross midnight
   is_active: boolean;
   joined_at: string | null;
 }

@@ -80,6 +80,20 @@ export function ProfileForms({ profile }: { profile: Profile }) {
               ))}
             </Select>
           </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label>Work start (your local time)</Label>
+              <Input name="work_start" type="time" required defaultValue={profile.work_start?.slice(0, 5) ?? "09:00"} />
+            </div>
+            <div>
+              <Label>Work end</Label>
+              <Input name="work_end" type="time" required defaultValue={profile.work_end?.slice(0, 5) ?? "18:00"} />
+            </div>
+          </div>
+          <p className="text-xs text-muted">
+            Checking in after your start time counts as late; check-out unlocks
+            at your end time. The window may cross midnight (e.g. 20:00 to 16:00).
+          </p>
           {msg && <p className={`text-sm ${msg.ok ? "text-success" : "text-danger"}`}>{msg.text}</p>}
           <Button type="submit">Save profile</Button>
         </form>

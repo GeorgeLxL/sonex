@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { LogIn, LogOut, Plus, X } from "lucide-react";
 import { Button, Dialog, Input, Label, Select, Textarea, Badge, Empty, Card } from "@/components/ui";
 import { checkIn, checkOut, requestLeave, cancelLeave } from "@/server/actions/attendance";
+import { alertInfo } from "@/lib/swal";
 import { formatDateHuman, formatDateTime } from "@/lib/dates";
 
 export interface AttendanceRow {
@@ -22,6 +23,7 @@ export interface LeaveRow {
   end_date: string;
   type: string;
   is_paid: boolean;
+  early_time: string | null;
   reason: string | null;
   status: "pending" | "approved" | "rejected";
   review_note: string | null;
@@ -38,14 +40,36 @@ export function AttendancePanel({
   todayLog,
   logs,
   leaves,
+  workStart,
+  workEnd,
+  timezone,
 }: {
   todayLog: AttendanceRow | null;
   logs: AttendanceRow[];
   leaves: LeaveRow[];
+  workStart: string;
+  workEnd: string;
+  timezone: string;
 }) {
   const router = useRouter();
   const [requesting, setRequesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [leaveType, setLeaveType] = useState("vacation");
+
+  // Early checkout is blocked with an alert instead of an inline error.
+  async function tryCheckOut() {
+    setError(null);
+    const result = await checkOut();
+    if (!result.ok) {
+      if (result.error?.startsWith("Too early")) {
+        alertInfo("Not yet!", result.error);
+      } else {
+        setError(result.error ?? "Failed");
+      }
+    } else {
+      router.refresh();
+    }
+  }
 
   async function run(action: () => Promise<{ ok: boolean; error?: string }>) {
     setError(null);
@@ -61,6 +85,9 @@ export function AttendancePanel({
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-sm font-semibold">Today</h2>
+            <p className="text-xs text-muted">
+              Your working hours: {workStart.slice(0, 5)} - {workEnd.slice(0, 5)} ({timezone})
+            </p>
             <p className="mt-1 text-sm text-muted">
               {todayLog?.check_in
                 ? `Checked in ${formatDateTime(todayLog.check_in)}${todayLog.check_out ? ` — out ${formatDateTime(todayLog.check_out)}` : ""}`
@@ -79,7 +106,7 @@ export function AttendancePanel({
               </Button>
             )}
             {todayLog?.check_in && !todayLog.check_out && (
-              <Button variant="secondary" onClick={() => run(checkOut)}>
+              <Button variant="secondary" onClick={tryCheckOut}>
                 <LogOut size={15} /> Check out
               </Button>
             )}
@@ -104,7 +131,8 @@ export function AttendancePanel({
                 <div className="text-sm font-medium">
                   {formatDateHuman(l.start_date)} → {formatDateHuman(l.end_date)}
                   <span className="ml-2 text-xs text-muted">
-                    {l.type}
+                    {l.type === "early_leave" ? "leave early" : l.type}
+                    {l.early_time && ` at ${l.early_time.slice(0, 5)}`}
                     {!l.is_paid && " (unpaid)"}
                   </span>
                 </div>
@@ -165,10 +193,12 @@ export function AttendancePanel({
       <Dialog open={requesting} onClose={() => setRequesting(false)} title="Request leave">
         <form
           action={async (formData: FormData) => {
+            const isEarly = formData.get("type") === "early_leave";
             const result = await requestLeave({
               start_date: formData.get("start_date"),
-              end_date: formData.get("end_date"),
+              end_date: isEarly ? formData.get("start_date") : formData.get("end_date"),
               type: formData.get("type"),
+              early_time: isEarly ? formData.get("early_time") : undefined,
               reason: (formData.get("reason") as string) || undefined,
             });
             if (!result.ok) setError(result.error ?? "Failed");
@@ -179,24 +209,32 @@ export function AttendancePanel({
           }}
           className="space-y-4"
         >
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>From *</Label>
-              <Input name="start_date" type="date" required />
-            </div>
-            <div>
-              <Label>To *</Label>
-              <Input name="end_date" type="date" required />
-            </div>
-          </div>
           <div>
             <Label>Type</Label>
-            <Select name="type" defaultValue="vacation">
+            <Select name="type" value={leaveType} onChange={(e) => setLeaveType(e.target.value)}>
               <option value="vacation">Vacation (paid)</option>
               <option value="sick">Sick (paid)</option>
               <option value="personal">Personal (paid)</option>
               <option value="unpaid">Unpaid leave</option>
+              <option value="early_leave">Leave early (single day, paid)</option>
             </Select>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label>{leaveType === "early_leave" ? "Date *" : "From *"}</Label>
+              <Input name="start_date" type="date" required />
+            </div>
+            {leaveType === "early_leave" ? (
+              <div>
+                <Label>Leave at (your local time) *</Label>
+                <Input name="early_time" type="time" required />
+              </div>
+            ) : (
+              <div>
+                <Label>To *</Label>
+                <Input name="end_date" type="date" required />
+              </div>
+            )}
           </div>
           <div>
             <Label>Reason</Label>

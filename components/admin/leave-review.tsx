@@ -15,6 +15,7 @@ export interface LeaveReviewRow {
   end_date: string;
   type: string;
   is_paid: boolean;
+  early_time: string | null;
   reason: string | null;
   status: string;
 }
@@ -56,7 +57,8 @@ export function LeaveReview({ leaves, canWrite }: { leaves: LeaveReviewRow[]; ca
                   </span>
                 </div>
                 <div className="text-xs text-muted">
-                  {l.type}
+                  {l.type === "early_leave" ? "leave early" : l.type}
+                  {l.early_time && ` at ${l.early_time.slice(0, 5)}`}
                   {!l.is_paid && " (unpaid — deducted from salary)"}
                   {l.reason && ` — ${l.reason}`}
                 </div>
@@ -84,7 +86,7 @@ export function LeaveReview({ leaves, canWrite }: { leaves: LeaveReviewRow[]; ca
             <div key={l.id} className="flex items-center justify-between rounded-lg border border-line bg-surface p-3 text-sm">
               <span>
                 {l.user_name} · {formatDateHuman(l.start_date)} → {formatDateHuman(l.end_date)}
-                <span className="ml-2 text-xs text-muted">{l.type}</span>
+                <span className="ml-2 text-xs text-muted">{l.type === "early_leave" ? "leave early" : l.type}</span>
               </span>
               <Badge tone={l.status === "approved" ? "success" : "danger"}>{l.status}</Badge>
             </div>

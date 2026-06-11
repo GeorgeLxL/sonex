@@ -32,6 +32,7 @@ export default async function AdminAttendancePage() {
     end_date: l.end_date,
     type: l.type,
     is_paid: l.is_paid,
+    early_time: l.early_time ?? null,
     reason: l.reason,
     status: l.status,
   }));

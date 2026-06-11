@@ -82,6 +82,8 @@ create table profiles (
   bio           text not null default '',
   birthday      date,
   timezone      text not null default 'Asia/Tokyo',
+  work_start    time not null default '09:00',  -- local working hours
+  work_end      time not null default '18:00',  -- (window may cross midnight)
   is_active     boolean not null default true,
   joined_at     date,
   created_at    timestamptz not null default now(),
@@ -266,7 +268,7 @@ create table contact_inquiries (
   name       text not null,
   email      text not null,
   company    text,
-  budget     text,
+  phone      text,
   message    text not null,
   status     text not null default 'new' check (status in ('new','replied','closed')),
   created_at timestamptz not null default now()
@@ -343,7 +345,7 @@ create table projects (
   sort_order  int not null default 0,
   is_archived boolean not null default false,
   archived_at timestamptz,
-  created_by  uuid references profiles(id),
+  created_by  uuid references profiles(id) on delete set null,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
@@ -356,7 +358,7 @@ create table project_members (
   id         uuid primary key default gen_random_uuid(),
   project_id uuid not null references projects(id) on delete cascade,
   user_id    uuid not null references profiles(id) on delete cascade,
-  added_by   uuid references profiles(id),
+  added_by   uuid references profiles(id) on delete set null,
   created_at timestamptz not null default now(),
   unique (project_id, user_id)
 );
@@ -392,7 +394,7 @@ create table tasks (
   sort_order   int not null default 0,
   is_archived  boolean not null default false,
   archived_at  timestamptz,
-  created_by   uuid references profiles(id),
+  created_by   uuid references profiles(id) on delete set null,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
@@ -416,7 +418,7 @@ create table task_attachments (
   file_name   text not null,
   file_path   text not null,                  -- path in the private 'files' bucket
   size_bytes  bigint not null default 0,
-  uploaded_by uuid references profiles(id),
+  uploaded_by uuid references profiles(id) on delete set null,
   created_at  timestamptz not null default now()
 );
 create index idx_attachments_task on task_attachments(task_id);
@@ -680,11 +682,12 @@ create table leave_requests (
   user_id     uuid not null references profiles(id) on delete cascade,
   start_date  date not null,
   end_date    date not null,
-  type        text not null default 'vacation' check (type in ('vacation','sick','personal','unpaid')),
+  type        text not null default 'vacation' check (type in ('vacation','sick','personal','unpaid','early_leave')),
   is_paid     boolean not null default true,
+  early_time  time,                              -- early_leave: may check out after this
   reason      text,
   status      leave_status not null default 'pending',
-  reviewed_by uuid references profiles(id),
+  reviewed_by uuid references profiles(id) on delete set null,
   reviewed_at timestamptz,
   review_note text,
   created_at  timestamptz not null default now(),
@@ -696,7 +699,7 @@ create table announcements (
   id           uuid primary key default gen_random_uuid(),
   title        text not null,
   body         text not null,
-  created_by   uuid references profiles(id),
+  created_by   uuid references profiles(id) on delete set null,
   published_at timestamptz not null default now()
 );
 
@@ -705,8 +708,8 @@ create table kb_articles (
   title      text not null,
   category   text not null default 'General',
   body       text not null,
-  created_by uuid references profiles(id),
-  updated_by uuid references profiles(id),
+  created_by uuid references profiles(id) on delete set null,
+  updated_by uuid references profiles(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -747,7 +750,7 @@ create table expenses (
   amount      numeric(12,2) not null,
   spent_date  date not null default current_date,
   description text,
-  created_by  uuid references profiles(id)
+  created_by  uuid references profiles(id) on delete set null
 );
 
 create table staff_salaries (
@@ -755,7 +758,7 @@ create table staff_salaries (
   user_id        uuid not null references profiles(id) on delete cascade,
   base_salary    numeric(12,2) not null,
   effective_from date not null,
-  created_by     uuid references profiles(id),
+  created_by     uuid references profiles(id) on delete set null,
   created_at     timestamptz not null default now(),
   unique (user_id, effective_from)
 );
@@ -770,7 +773,7 @@ create table salary_records (
   absence_deduction numeric(12,2) not null default 0,
   total             numeric(12,2) not null default 0,
   status            salary_status not null default 'draft',
-  confirmed_by      uuid references profiles(id),
+  confirmed_by      uuid references profiles(id) on delete set null,
   confirmed_at      timestamptz,
   paid_at           timestamptz,
   note              text,
@@ -782,7 +785,7 @@ create table salary_adjustments (
   salary_record_id uuid not null references salary_records(id) on delete cascade,
   amount           numeric(12,2) not null,    -- positive bonus / negative deduction
   reason           text not null,
-  added_by         uuid references profiles(id),
+  added_by         uuid references profiles(id) on delete set null,
   created_at       timestamptz not null default now()
 );
 
@@ -1377,6 +1380,7 @@ returns setof uuid language sql stable security definer set search_path = public
      )
 $$;
 revoke all on function users_with_perm from public;
+revoke all on function users_with_perm from anon;
 
 -- Announcements -> a notification for every active staff member.
 -- Gated: only announcement managers may call it.
@@ -1392,6 +1396,7 @@ begin
 end $$;
 revoke all on function notify_all_staff from public;
 grant execute on function notify_all_staff to authenticated;
+revoke execute on function notify_all_staff from anon;
 
 -- Project reaches Done -> notify everyone in charge of payment
 -- collection (= holders of projects.mark_paid write; per-user

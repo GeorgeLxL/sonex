@@ -2,6 +2,7 @@ import { requireAuth, can, isAdminish, type AuthContext } from "@/lib/auth";
 import { getContent, text } from "@/lib/content";
 import { Sidebar, type NavItem } from "@/components/layout/sidebar";
 import { Logo } from "@/components/logo";
+import { LiveClock } from "@/components/live-clock";
 import { NotificationBell } from "@/components/notifications";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut } from "@/server/actions/auth";
@@ -14,7 +15,11 @@ function buildNav(auth: AuthContext): { title: string; items: NavItem[] }[] {
   if (auth.role === "ceo") {
     groups.push({
       title: "Executive",
-      items: [{ href: "/ceo", label: "Executive dashboard", icon: "ceo" }],
+      items: [
+        { href: "/ceo", label: "Executive dashboard", icon: "ceo" },
+        { href: "/workspace/notifications", label: "Notifications", icon: "bell" },
+        { href: "/workspace/profile", label: "Profile", icon: "profile" },
+      ],
     });
   }
 
@@ -66,7 +71,7 @@ export default async function ErpLayout({ children }: { children: React.ReactNod
           <div className="md:hidden">
             <Logo className="h-6" />
           </div>
-          <div className="hidden text-sm text-muted md:block" />
+          <LiveClock timezone={auth.profile.timezone} />
           <div className="flex items-center gap-1.5">
             <ThemeToggle />
             <NotificationBell userId={auth.userId} />

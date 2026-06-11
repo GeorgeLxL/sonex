@@ -14,6 +14,8 @@ const profileSchema = z.object({
   birthday: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().default(null),
   timezone: z.string().refine((t) => TIMEZONES.includes(t), "Unknown timezone"),
   bio: z.string().trim().max(1000).default(""),
+  work_start: z.string().regex(/^\d{2}:\d{2}$/, "Invalid start time"),
+  work_end: z.string().regex(/^\d{2}:\d{2}$/, "Invalid end time"),
 });
 
 const AVATAR_TYPES: Record<string, string> = {
@@ -30,6 +32,8 @@ export async function updateMyProfile(formData: FormData): Promise<ActionResult>
     birthday: (formData.get("birthday") as string) || null,
     timezone: formData.get("timezone"),
     bio: formData.get("bio") ?? "",
+    work_start: formData.get("work_start"),
+    work_end: formData.get("work_end"),
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid" };
 

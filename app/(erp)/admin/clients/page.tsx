@@ -39,7 +39,7 @@ export default async function ClientsPage({
         rows={rows}
         columns={[
           { key: "name", label: "From" },
-          { key: "budget", label: "Budget" },
+          { key: "phone", label: "Phone" },
           { key: "status", label: "Status" },
         ]}
         canWrite={canWrite}

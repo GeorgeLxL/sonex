@@ -16,6 +16,8 @@ const staffPatchSchema = z.object({
   role_id: z.string().uuid().optional(),
   department_id: z.string().uuid().nullable().optional(),
   is_active: z.boolean().optional(),
+  work_start: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  work_end: z.string().regex(/^\d{2}:\d{2}$/).optional(),
 });
 
 export async function updateStaff(userId: string, input: unknown): Promise<ActionResult> {
@@ -58,6 +60,46 @@ export async function updateStaff(userId: string, input: unknown): Promise<Actio
       p_body: "Welcome aboard — your account is now active.",
       p_link: "/workspace",
     });
+  }
+  revalidatePath("/admin/staff");
+  return { ok: true };
+}
+
+/** Permanently delete a staff account (auth user + profile cascade).
+ *  Prefer deactivation; deletion is for mistakes/spam registrations. */
+export async function deleteStaff(userId: string): Promise<ActionResult> {
+  const auth = await requireAuth();
+  if (!can(auth, "staff", "write")) return fail("No permission to manage staff");
+  if (userId === auth.userId) return fail("You cannot delete yourself");
+
+  const db = await supabaseServer();
+  const { data: target } = await db
+    .from("profiles")
+    .select("full_name, roles(name)")
+    .eq("id", userId)
+    .single();
+  if (!target) return fail("Account not found");
+  if ((target.roles as unknown as { name: string } | null)?.name === "coo" && auth.role !== "coo") {
+    return fail("Only the COO can delete a COO account");
+  }
+
+  // Owned projects block deletion - reassign owners first.
+  const { count } = await db
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", userId);
+  if ((count ?? 0) > 0) {
+    return fail(`${target.full_name} owns ${count} project(s) - reassign the owner first`);
+  }
+
+  const admin = supabaseAdmin();
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  if (error) {
+    return fail(
+      /foreign key|violates/i.test(error.message)
+        ? "This account still has linked records - deactivate it instead"
+        : error.message,
+    );
   }
   revalidatePath("/admin/staff");
   return { ok: true };

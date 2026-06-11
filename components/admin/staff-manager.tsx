@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, KeyRound, Check } from "lucide-react";
+import { Pencil, KeyRound, Check, Trash2 } from "lucide-react";
 import { Button, Dialog, Input, Label, Select, Badge, Empty, Card } from "@/components/ui";
-import { updateStaff, resetStaffPassword } from "@/server/actions/staff";
+import { updateStaff, resetStaffPassword, deleteStaff } from "@/server/actions/staff";
+import { confirmDialog } from "@/lib/swal";
 import { initials } from "@/lib/utils";
 
 export interface StaffRow {
@@ -18,6 +19,8 @@ export interface StaffRow {
   department_name: string | null;
   is_active: boolean;
   joined_at: string | null;
+  work_start: string;
+  work_end: string;
 }
 
 export function StaffManager({
@@ -138,6 +141,27 @@ export function StaffManager({
                     >
                       <KeyRound size={14} />
                     </button>
+                    {s.id !== meId && (
+                      <button
+                        className="rounded p-1.5 text-muted hover:bg-surface-2 hover:text-danger"
+                        aria-label={`Delete ${s.full_name}`}
+                        onClick={async () => {
+                          if (
+                            await confirmDialog(
+                              `Permanently delete ${s.full_name}?`,
+                              "Their account is removed and they can no longer sign in. Prefer deactivating unless this account was a mistake.",
+                              { danger: true, confirmText: "Delete account" },
+                            )
+                          ) {
+                            const result = await deleteStaff(s.id);
+                            if (!result.ok) setError(result.error ?? "Failed");
+                            else router.refresh();
+                          }
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -158,6 +182,8 @@ export function StaffManager({
                 role_id: formData.get("role_id"),
                 department_id: formData.get("department_id") || null,
                 is_active: formData.get("is_active") === "on",
+                work_start: formData.get("work_start"),
+                work_end: formData.get("work_end"),
               });
               setPending(false);
               if (!result.ok) setError(result.error ?? "Failed");
@@ -191,6 +217,20 @@ export function StaffManager({
                 ))}
               </Select>
             </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label>Work start (their local time)</Label>
+                <Input name="work_start" type="time" defaultValue={editing.work_start?.slice(0, 5) ?? "09:00"} required />
+              </div>
+              <div>
+                <Label>Work end</Label>
+                <Input name="work_end" type="time" defaultValue={editing.work_end?.slice(0, 5) ?? "18:00"} required />
+              </div>
+            </div>
+            <p className="text-xs text-muted">
+              Check-in after start = late; check-out is allowed after end.
+              The window may cross midnight (e.g. 20:00 to 16:00).
+            </p>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" name="is_active" defaultChecked={editing.is_active} disabled={editing.id === meId} />
               Active (inactive accounts cannot sign in)

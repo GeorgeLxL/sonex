@@ -26,11 +26,11 @@ const NAV = [
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const content = await getContent(["site.name", "site.tagline", "contact.info", "site.social"]);
   const siteName = text(content, "site.name", "text", "Sonex-Digital");
-  // Icons always render; "#" placeholder until a real URL is set in the CMS.
-  const socials = SOCIAL_ICONS.map((s) => {
-    const url = text(content, "site.social", s.key);
-    return { ...s, url: url.startsWith("http") ? url : "#" };
-  });
+  // Only links configured in the CMS (site.social) are rendered.
+  const socials = SOCIAL_ICONS.map((s) => ({
+    ...s,
+    url: text(content, "site.social", s.key),
+  })).filter((s) => s.url.startsWith("http"));
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -66,19 +66,22 @@ export default async function PublicLayout({ children }: { children: React.React
             <p className="mt-3 max-w-sm text-sm text-muted">
               {text(content, "site.tagline", "text")}
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {socials.map(({ key, label, Icon, url }) => (
-                <a
-                  key={key}
-                  href={url}
-                  {...(url !== "#" ? { target: "_blank", rel: "noreferrer" } : {})}
-                  aria-label={label}
-                  className="rounded-lg border border-accent/40 p-2.5 text-accent transition-colors hover:border-accent hover:bg-accent hover:text-white"
-                >
-                  <Icon size={22} />
-                </a>
-              ))}
-            </div>
+            {socials.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {socials.map(({ key, label, Icon, url }) => (
+                  <a
+                    key={key}
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={label}
+                    className="rounded-lg border border-accent/40 p-2.5 text-accent transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                  >
+                    <Icon size={22} />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
           <div className="md:col-span-2">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Company</div>

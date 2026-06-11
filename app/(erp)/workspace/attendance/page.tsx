@@ -33,7 +33,14 @@ export default async function WorkspaceAttendancePage() {
   return (
     <div>
       <PageTitle title="Attendance" sub="Check in when you start, out when you finish." />
-      <AttendancePanel todayLog={todayLog} logs={logs} leaves={(leavesRes.data ?? []) as LeaveRow[]} />
+      <AttendancePanel
+        todayLog={todayLog}
+        logs={logs}
+        leaves={(leavesRes.data ?? []) as LeaveRow[]}
+        workStart={auth.profile.work_start ?? "09:00"}
+        workEnd={auth.profile.work_end ?? "18:00"}
+        timezone={auth.profile.timezone}
+      />
     </div>
   );
 }

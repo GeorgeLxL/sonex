@@ -63,6 +63,8 @@ export default async function StaffPage({
       department_name: (p.departments as { name: string } | null)?.name ?? null,
       is_active: p.is_active,
       joined_at: p.joined_at,
+      work_start: p.work_start ?? "09:00",
+      work_end: p.work_end ?? "18:00",
     };
   });
 
