@@ -50,9 +50,6 @@ export default async function PublicLayout({ children }: { children: React.React
             >
               Start a project
             </Link>
-            <Link href="/login" className="rounded px-3 py-2 text-sm text-muted hover:text-ink">
-              Staff login
-            </Link>
           </div>
         </div>
         <nav className="flex items-center gap-4 overflow-x-auto border-t border-line px-4 py-2 text-sm md:hidden">
