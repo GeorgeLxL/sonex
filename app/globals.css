@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens as RGB triplets so Tailwind alpha works. */
+:root {
+  --bg: 248 250 252;
+  --surface: 255 255 255;
+  --surface-2: 241 245 249;
+  --line: 226 232 240;
+  --ink: 15 23 42;
+  --muted: 100 116 139;
+  --accent: 79 70 229;
+  --accent-ink: 255 255 255;
+  --success: 22 163 74;
+  --warning: 217 119 6;
+  --danger: 220 38 38;
+}
+
+.dark {
+  --bg: 15 23 42;
+  --surface: 30 41 59;
+  --surface-2: 51 65 85;
+  --line: 71 85 105;
+  --ink: 241 245 249;
+  --muted: 156 171 187;
+  --accent: 129 140 248;
+  --accent-ink: 15 23 42;
+  --success: 74 222 128;
+  --warning: 251 191 36;
+  --danger: 248 113 113;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark; /* native date/time pickers follow the theme */
+}
+
+/* Themed checkboxes everywhere (replaces the browser default). */
+input[type="checkbox"] {
+  @apply h-[18px] w-[18px] shrink-0 cursor-pointer appearance-none rounded border border-line bg-surface align-text-bottom transition-colors;
+}
+input[type="checkbox"]:hover {
+  @apply border-accent;
+}
+input[type="checkbox"]:checked {
+  @apply border-accent bg-accent;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>");
+  background-size: 80% 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+input[type="checkbox"]:focus-visible {
+  @apply outline outline-2 outline-offset-2 outline-accent/50;
+}
+input[type="checkbox"]:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+body {
+  @apply bg-bg text-ink antialiased;
+}
+
+/* Thin scrollbars for board columns */
+.board-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.board-scroll::-webkit-scrollbar-thumb {
+  @apply rounded bg-line;
+}
