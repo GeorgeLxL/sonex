@@ -17,7 +17,7 @@ export default async function SettingsPage({
 
   const [rolesRes, permsRes, rolePermsRes, usersRes, userPermsRes, selectedRes] =
     await Promise.all([
-      db.from("roles").select("id, name, display_name").order("display_name"),
+      db.from("roles").select("id, name, display_name, is_system").order("display_name"),
       db.from("permissions").select("code, label").order("code"),
       db.from("role_permissions").select("role_id, code, level"),
       db

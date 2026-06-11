@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button, Dialog, Input, Label, Select, Empty, Card } from "@/components/ui";
-import { setRolePerm, setUserPerm, createRole } from "@/server/actions/settings";
+import { setRolePerm, setUserPerm, createRole, deleteRole } from "@/server/actions/settings";
+import { confirmDialog } from "@/lib/swal";
 
 export interface RoleInfo {
   id: string;
   name: string;
   display_name: string;
+  is_system: boolean;
 }
 export interface PermInfo {
   code: string;
@@ -75,7 +77,30 @@ export function PermissionsManager({
               <tr className="border-b border-line text-left text-xs text-muted">
                 <th className="px-2 py-2 font-medium">Permission</th>
                 {editableRoles.map((r) => (
-                  <th key={r.id} className="px-2 py-2 font-medium">{r.display_name}</th>
+                  <th key={r.id} className="px-2 py-2 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <span>{r.display_name}</span>
+                      {!r.is_system && (
+                        <button
+                          aria-label={`Delete ${r.display_name} role`}
+                          className="rounded p-0.5 text-muted hover:bg-surface-2 hover:text-danger"
+                          onClick={async () => {
+                            if (
+                              await confirmDialog(
+                                `Delete the "${r.display_name}" role?`,
+                                "Its permission defaults are removed. Staff must be reassigned first.",
+                                { danger: true, confirmText: "Delete role" },
+                              )
+                            ) {
+                              run(() => deleteRole(r.id));
+                            }
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
+                  </th>
                 ))}
               </tr>
             </thead>

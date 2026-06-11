@@ -88,3 +88,32 @@ export async function createRole(input: unknown): Promise<ActionResult> {
   revalidatePath("/admin/settings");
   return { ok: true };
 }
+
+export async function deleteRole(roleId: string): Promise<ActionResult> {
+  const auth = await requirePermAdmin();
+  if (!auth) return fail("Only permission managers can do this");
+
+  const db = await supabaseServer();
+  const { data: role } = await db
+    .from("roles")
+    .select("name, is_system")
+    .eq("id", roleId)
+    .single();
+  if (!role) return fail("Role not found");
+  if (role.is_system) return fail("System roles (COO, CEO, Staff, ...) cannot be deleted");
+
+  // Block deletion while staff are still assigned the role.
+  const { count } = await db
+    .from("profiles")
+    .select("id", { count: "exact", head: true })
+    .eq("role_id", roleId);
+  if ((count ?? 0) > 0) {
+    return fail(`${count} staff member(s) still have this role - reassign them first`);
+  }
+
+  // role_permissions cascade-delete via FK; user_permissions are per-user.
+  const { error } = await db.from("roles").delete().eq("id", roleId);
+  if (error) return fail(error.message);
+  revalidatePath("/admin/settings");
+  return { ok: true };
+}
