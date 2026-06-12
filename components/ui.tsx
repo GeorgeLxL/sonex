@@ -34,8 +34,20 @@ export function Button({
 
 /* ---------------- Form fields ---------------- */
 
-export function Label({ children, className }: { children: ReactNode; className?: string }) {
-  return <label className={cn("mb-1 block text-xs font-medium text-muted", className)}>{children}</label>;
+export function Label({
+  children,
+  className,
+  htmlFor,
+}: {
+  children: ReactNode;
+  className?: string;
+  htmlFor?: string;
+}) {
+  return (
+    <label htmlFor={htmlFor} className={cn("mb-1 block text-xs font-medium text-muted", className)}>
+      {children}
+    </label>
+  );
 }
 
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {

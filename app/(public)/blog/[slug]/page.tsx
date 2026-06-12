@@ -68,6 +68,8 @@ export default async function BlogPostPage({
             <img
               src={post.cover_url}
               alt={post.title}
+              loading="lazy"
+              decoding="async"
               className="mt-8 w-full rounded object-cover"
             />
           )}

@@ -8,6 +8,25 @@ export interface PublicFormState {
   error?: string;
 }
 
+/** reCAPTCHA v3 server check. Skipped (returns true) when no secret is
+ *  configured; with a secret set, a missing/invalid token or low score fails. */
+async function verifyRecaptcha(token: FormDataEntryValue | null): Promise<boolean> {
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret) return true;
+  if (typeof token !== "string" || !token) return false;
+  try {
+    const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret, response: token }),
+    });
+    const data = (await res.json()) as { success: boolean; score?: number };
+    return data.success && (data.score ?? 0) >= 0.5;
+  } catch {
+    return false;
+  }
+}
+
 const inquirySchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(200),
   email: z.string().trim().email("Valid email required"),
@@ -27,6 +46,9 @@ export async function submitInquiry(
   const parsed = inquirySchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  if (!(await verifyRecaptcha(formData.get("recaptcha_token")))) {
+    return { ok: false, error: "Spam check failed — please try again." };
   }
   const { website: _hp, agree: _agree, ...row } = parsed.data;
 
@@ -59,6 +81,9 @@ export async function submitApplication(
   const parsed = applicationSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  if (!(await verifyRecaptcha(formData.get("recaptcha_token")))) {
+    return { ok: false, error: "Spam check failed — please try again." };
   }
   const { website: _hp, ...row } = parsed.data;
 

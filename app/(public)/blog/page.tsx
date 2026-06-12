@@ -5,7 +5,10 @@ import { Section } from "@/components/public/sections";
 import { PageHero } from "@/components/public/page-hero";
 import { formatDateHuman } from "@/lib/dates";
 
-export const metadata: Metadata = { title: "Blog" };
+export const metadata: Metadata = {
+  title: "Blog",
+  description: "Engineering notes, product thinking and stories from the Sonex-Digital team.",
+};
 
 export default async function BlogPage() {
   const db = await supabaseServer();
@@ -35,10 +38,12 @@ export default async function BlogPage() {
               <img
                 src={p.cover_url}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="h-32 w-full sm:w-32 shrink-0 object-cover transition-transform group-hover:scale-[1.02]"
               />
             ) : (
-              <div className="h-36 w-36 shrink-0 items-center justify-center bg-surface-2 text-4xl font-black text-line">
+              <div className="flex h-32 w-full shrink-0 items-center justify-center bg-surface-2 text-4xl font-black text-line sm:w-32">
                 SX
               </div>
             )}

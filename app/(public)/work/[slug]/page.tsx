@@ -82,6 +82,8 @@ export default async function CaseStudyPage({
             <img
               src={work.cover_url}
               alt={work.title}
+              loading="lazy"
+              decoding="async"
               className="mt-8 w-full rounded object-cover"
             />
           )}

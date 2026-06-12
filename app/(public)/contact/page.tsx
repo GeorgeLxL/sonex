@@ -6,13 +6,18 @@ import { Section } from "@/components/public/sections";
 import { PageHero } from "@/components/public/page-hero";
 import { ContactForm } from "@/components/public/forms";
 
-export const metadata: Metadata = { title: "Contact" };
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Tell us what you are building — we reply within one business day.",
+};
 
 export default async function ContactPage() {
   const db = await supabaseServer();
   const content = await getContent(["contact.info"]);
-  const email = text(content, "contact.info", "email", "hello@example.com");
+  // No placeholder fallbacks — unset CMS fields simply don't render.
+  const email = text(content, "contact.info", "email");
   const phone = text(content, "contact.info", "phone");
+  const address = text(content, "contact.info", "address");
 
   return (
     <>
@@ -28,27 +33,35 @@ export default async function ContactPage() {
             <ContactForm />
           </div>
           <aside className="space-y-4">
-            <div className="rounded border border-line bg-surface p-5">
-              <h2 className="text-sm font-semibold">Contact info</h2>
-              <ul className="mt-3 space-y-3 text-sm text-muted">
-                <li className="flex items-center gap-2">
-                  <Mail size={15} className="text-accent" />
-                  <a href={`mailto:${email}`} className="hover:text-accent hover:underline">
-                    {email}
-                  </a>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Phone size={15} className="text-accent" />
-                  <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="hover:text-accent hover:underline">
-                    {phone}
-                  </a>
-                </li>
-                <li className="flex items-start gap-2">
-                  <MapPin size={15} className="mt-0.5 shrink-0 text-accent" />
-                  {text(content, "contact.info", "address")}
-                </li>
-              </ul>
-            </div>
+            {(email || phone || address) && (
+              <div className="rounded border border-line bg-surface p-5">
+                <h2 className="text-sm font-semibold">Contact info</h2>
+                <ul className="mt-3 space-y-3 text-sm text-muted">
+                  {email && (
+                    <li className="flex items-center gap-2">
+                      <Mail size={15} className="text-accent" />
+                      <a href={`mailto:${email}`} className="hover:text-accent hover:underline">
+                        {email}
+                      </a>
+                    </li>
+                  )}
+                  {phone && (
+                    <li className="flex items-center gap-2">
+                      <Phone size={15} className="text-accent" />
+                      <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="hover:text-accent hover:underline">
+                        {phone}
+                      </a>
+                    </li>
+                  )}
+                  {address && (
+                    <li className="flex items-start gap-2">
+                      <MapPin size={15} className="mt-0.5 shrink-0 text-accent" />
+                      {address}
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
           </aside>
         </div>
       </Section>

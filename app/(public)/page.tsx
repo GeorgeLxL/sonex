@@ -8,7 +8,7 @@ import { PageHero } from "@/components/public/page-hero";
 import { IconByName } from "@/components/icon-map";
 import { formatDateHuman } from "@/lib/dates";
 import { TestimonialSlider, type TestimonialData } from "@/components/public/testimonial-slider";
-import { ServiceCard } from "@/components/public/service-card";
+import { ServiceCard, splitFeatured } from "@/components/public/service-card";
 
 export default async function HomePage() {
   const db = await supabaseServer();
@@ -89,14 +89,28 @@ export default async function HomePage() {
         <SectionButton href="/about" label="View About Us" />
       </Section>
 
-      {/* Services — bento grid: first card featured, varied icon hues */}
+      {/* Services — 2 featured cards on top, remaining 4 compact below */}
       <Section>
         <SectionTitle kicker="Services" title="What we build" />
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {(services.data ?? []).map((s, i) => (
-            <ServiceCard key={s.id} service={s} index={i} />
-          ))}
-        </div>
+        {(() => {
+          const { featured, rest } = splitFeatured(services.data ?? []);
+          return (
+            <div className="grid gap-8 md:grid-cols-3">
+              {featured.map((s, i) => (
+                <ServiceCard
+                  key={s.id}
+                  service={s}
+                  index={i}
+                  variant="featured"
+                  className="md:col-span-2 md:row-span-2"
+                />
+              ))}
+              {rest.map((s, i) => (
+                <ServiceCard key={s.id} service={s} index={i + featured.length} variant="compact" />
+              ))}
+            </div>
+          );
+        })()}
         <SectionButton href="/services" label="View All Services" />
       </Section>
 
@@ -194,6 +208,8 @@ export default async function HomePage() {
                       <img
                         src={c.cover_url}
                         alt={c.title}
+                        loading="lazy"
+                        decoding="async"
                         className="h-80 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       />
                     ) : (
@@ -228,6 +244,8 @@ export default async function HomePage() {
                     <img
                       src={c.cover_url}
                       alt={c.title}
+                      loading="lazy"
+                      decoding="async"
                       className="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                   ) : (
@@ -282,10 +300,12 @@ export default async function HomePage() {
                 <img
                   src={p.cover_url}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className="h-32 w-full sm:w-32 shrink-0 object-cover transition-transform group-hover:scale-[1.02]"
                 />
               ) : (
-                <div className="h-36 w-36 shrink-0 items-center justify-center bg-surface-2 text-4xl font-black text-line">
+                <div className="flex h-32 w-full shrink-0 items-center justify-center bg-surface-2 text-4xl font-black text-line sm:w-32">
                   SX
                 </div>
               )}

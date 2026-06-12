@@ -62,6 +62,8 @@ export function WorkCard({ work, featured }: { work: WorkCardData; featured?: bo
             <img
               src={work.cover_url}
               alt={work.title}
+              loading="lazy"
+              decoding="async"
               className="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
@@ -127,6 +129,8 @@ export function WorkCard({ work, featured }: { work: WorkCardData; featured?: bo
             <img
               src={work.cover_url}
               alt={work.title}
+              loading="lazy"
+              decoding="async"
               className="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (

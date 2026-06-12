@@ -3,11 +3,19 @@
 import { useActionState } from "react";
 import { submitInquiry, submitApplication, type PublicFormState } from "@/server/actions/public";
 import { Button, Input, Textarea, Label, Select } from "@/components/ui";
+import { getRecaptchaToken } from "@/lib/recaptcha";
 
 const initial: PublicFormState = { ok: false };
 
 export function ContactForm() {
-  const [state, action, pending] = useActionState(submitInquiry, initial);
+  const [state, action, pending] = useActionState(
+    async (prev: PublicFormState, formData: FormData) => {
+      const token = await getRecaptchaToken("contact");
+      if (token) formData.set("recaptcha_token", token);
+      return submitInquiry(prev, formData);
+    },
+    initial,
+  );
 
   if (state.ok) {
     return (
@@ -22,27 +30,27 @@ export function ContactForm() {
     <form action={action} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label>Name *</Label>
-          <Input name="name" required maxLength={200} placeholder="Jane Smith" />
+          <Label htmlFor="contact-name">Name *</Label>
+          <Input id="contact-name" name="name" required maxLength={200} placeholder="Jane Smith" />
         </div>
         <div>
-          <Label>Email *</Label>
-          <Input name="email" type="email" required placeholder="jane@company.com" />
+          <Label htmlFor="contact-email">Email *</Label>
+          <Input id="contact-email" name="email" type="email" required placeholder="jane@company.com" />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label>Company</Label>
-          <Input name="company" maxLength={200} placeholder="Acme Inc." />
+          <Label htmlFor="contact-company">Company</Label>
+          <Input id="contact-company" name="company" maxLength={200} placeholder="Acme Inc." />
         </div>
         <div>
-          <Label>Phone number</Label>
-          <Input name="phone" type="tel" maxLength={50} placeholder="+1 (555) 000-0000" />
+          <Label htmlFor="contact-phone">Phone number</Label>
+          <Input id="contact-phone" name="phone" type="tel" maxLength={50} placeholder="+1 (555) 000-0000" />
         </div>
       </div>
       <div>
-        <Label>What are you building? *</Label>
-        <Textarea name="message" required rows={5} maxLength={5000} placeholder="A few sentences about your project, timeline and goals." />
+        <Label htmlFor="contact-message">What are you building? *</Label>
+        <Textarea id="contact-message" name="message" required rows={5} maxLength={5000} placeholder="A few sentences about your project, timeline and goals." />
       </div>
       {/* Honeypot */}
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
@@ -69,7 +77,14 @@ export function ContactForm() {
 }
 
 export function ApplicationForm({ jobs }: { jobs: { id: string; title: string }[] }) {
-  const [state, action, pending] = useActionState(submitApplication, initial);
+  const [state, action, pending] = useActionState(
+    async (prev: PublicFormState, formData: FormData) => {
+      const token = await getRecaptchaToken("apply");
+      if (token) formData.set("recaptcha_token", token);
+      return submitApplication(prev, formData);
+    },
+    initial,
+  );
 
   if (state.ok) {
     return (
@@ -83,8 +98,8 @@ export function ApplicationForm({ jobs }: { jobs: { id: string; title: string }[
   return (
     <form action={action} className="space-y-4">
       <div>
-        <Label>Position *</Label>
-        <Select name="job_post_id" required defaultValue={jobs[0]?.id}>
+        <Label htmlFor="apply-position">Position *</Label>
+        <Select id="apply-position" name="job_post_id" required defaultValue={jobs[0]?.id}>
           {jobs.map((j) => (
             <option key={j.id} value={j.id}>
               {j.title}
@@ -94,27 +109,27 @@ export function ApplicationForm({ jobs }: { jobs: { id: string; title: string }[
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label>Name *</Label>
-          <Input name="name" required maxLength={200} />
+          <Label htmlFor="apply-name">Name *</Label>
+          <Input id="apply-name" name="name" required maxLength={200} />
         </div>
         <div>
-          <Label>Email *</Label>
-          <Input name="email" type="email" required />
+          <Label htmlFor="apply-email">Email *</Label>
+          <Input id="apply-email" name="email" type="email" required />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label>Phone</Label>
-          <Input name="phone" maxLength={50} />
+          <Label htmlFor="apply-phone">Phone</Label>
+          <Input id="apply-phone" name="phone" maxLength={50} />
         </div>
         <div>
-          <Label>Resume / portfolio URL</Label>
-          <Input name="resume_url" type="url" placeholder="https://…" />
+          <Label htmlFor="apply-resume">Resume / portfolio URL</Label>
+          <Input id="apply-resume" name="resume_url" type="url" placeholder="https://…" />
         </div>
       </div>
       <div>
-        <Label>Cover letter</Label>
-        <Textarea name="cover_letter" rows={5} maxLength={5000} placeholder="Why this role, why you." />
+        <Label htmlFor="apply-cover">Cover letter</Label>
+        <Textarea id="apply-cover" name="cover_letter" rows={5} maxLength={5000} placeholder="Why this role, why you." />
       </div>
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
       {state.error && <p className="text-sm text-danger">{state.error}</p>}

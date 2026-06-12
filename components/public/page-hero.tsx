@@ -26,7 +26,7 @@ export function PageHero({
         aria-hidden
         className={`absolute inset-0 bg-cover bg-center opacity-70 dark:opacity-40`}
         style={{
-          backgroundImage: `url('/back/back-${pageBg}.png')`,
+          backgroundImage: `url('/back/back-${pageBg}.jpg')`,
         }}
       />
       {/* Scrim: fades the dots behind the text so copy stays readable. */}

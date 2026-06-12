@@ -6,7 +6,10 @@ import { Section, SectionTitle } from "@/components/public/sections";
 import { PageHero } from "@/components/public/page-hero";
 import { ApplicationForm } from "@/components/public/forms";
 
-export const metadata: Metadata = { title: "Careers" };
+export const metadata: Metadata = {
+  title: "Careers",
+  description: "Join Sonex-Digital — open positions, benefits and our hiring process.",
+};
 
 export default async function CareersPage() {
   const db = await supabaseServer();

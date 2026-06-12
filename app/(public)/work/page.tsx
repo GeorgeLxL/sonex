@@ -5,7 +5,10 @@ import { Section, CtaBand } from "@/components/public/sections";
 import { WorkCard, type WorkCardData } from "@/components/public/work-card";
 import { PageHero } from "@/components/public/page-hero";
 
-export const metadata: Metadata = { title: "Work" };
+export const metadata: Metadata = {
+  title: "Work",
+  description: "Products we designed, built and shipped — case studies across web, mobile, ERP and AI.",
+};
 
 export default async function WorkPage({
   searchParams,

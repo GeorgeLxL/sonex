@@ -27,8 +27,10 @@ const NAV = [
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const content = await getContent(["site.name", "site.tagline", "contact.info", "site.social"]);
   const siteName = text(content, "site.name", "text", "Sonex-Digital");
-  const email = text(content, "contact.info", "email", "hello@example.com");
+  // No placeholder fallbacks — unset CMS fields simply don't render.
+  const email = text(content, "contact.info", "email");
   const phone = text(content, "contact.info", "phone");
+  const address = text(content, "contact.info", "address");
   // Only links configured in the CMS (site.social) are rendered.
   const socials = SOCIAL_ICONS.map((s) => ({
     ...s,
@@ -101,22 +103,28 @@ export default async function PublicLayout({ children }: { children: React.React
           <div className="md:col-span-4">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Contact</div>
             <ul className="space-y-3 text-sm text-muted">
-              <li className="flex items-center gap-2.5">
-                <Mail size={16} className="shrink-0 text-accent" />
-                <a href={`mailto:${email}`} className="hover:text-ink hover:underline">
-                  {email}
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Phone size={16} className="shrink-0 text-accent" />
-                <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="hover:text-ink hover:underline">
-                  {phone}
-                </a>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin size={16} className="mt-0.5 shrink-0 text-accent" />
-                {text(content, "contact.info", "address")}
-              </li>
+              {email && (
+                <li className="flex items-center gap-2.5">
+                  <Mail size={16} className="shrink-0 text-accent" />
+                  <a href={`mailto:${email}`} className="hover:text-ink hover:underline">
+                    {email}
+                  </a>
+                </li>
+              )}
+              {phone && (
+                <li className="flex items-center gap-2.5">
+                  <Phone size={16} className="shrink-0 text-accent" />
+                  <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="hover:text-ink hover:underline">
+                    {phone}
+                  </a>
+                </li>
+              )}
+              {address && (
+                <li className="flex items-start gap-2.5">
+                  <MapPin size={16} className="mt-0.5 shrink-0 text-accent" />
+                  {address}
+                </li>
+              )}
             </ul>
           </div>
         </div>

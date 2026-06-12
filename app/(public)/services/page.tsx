@@ -5,9 +5,13 @@ import { Section, SectionTitle, CtaBand } from "@/components/public/sections";
 import { IconByName } from "@/components/icon-map";
 import { TechChips } from "@/components/public/tech-chip";
 import { PageHero } from "@/components/public/page-hero";
-import { ServiceCard } from "@/components/public/service-card";
+import { ServiceCard, splitFeatured } from "@/components/public/service-card";
 
-export const metadata: Metadata = { title: "Services" };
+export const metadata: Metadata = {
+  title: "Services",
+  description:
+    "Web, mobile, ERP, SaaS, AI and cloud — six disciplines, one senior team. Every engagement ships production software.",
+};
 
 interface ProcessStep {
   title: string;
@@ -32,11 +36,32 @@ export default async function ServicesPage() {
       />
 
       <Section>
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {(services.data ?? []).map((s, i) => (
-            <ServiceCard key={s.id} service={s} index={i} href={`#${s.slug}`} />
-          ))}
-        </div>
+        {(() => {
+          const { featured, rest } = splitFeatured(services.data ?? []);
+          return (
+            <div className="grid gap-8 md:grid-cols-3">
+              {featured.map((s, i) => (
+                <ServiceCard
+                  key={s.id}
+                  service={s}
+                  index={i}
+                  variant="featured"
+                  href={`#${s.slug}`}
+                  className="md:col-span-2 md:row-span-2"
+                />
+              ))}
+              {rest.map((s, i) => (
+                <ServiceCard
+                  key={s.id}
+                  service={s}
+                  index={i + featured.length}
+                  variant="compact"
+                  href={`#${s.slug}`}
+                />
+              ))}
+            </div>
+          );
+        })()}
       </Section>
 
       {/* Detailed sections — one rich block per service */}

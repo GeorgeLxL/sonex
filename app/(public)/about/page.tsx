@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -8,7 +9,10 @@ import { IconByName } from "@/components/icon-map";
 import { PageHero } from "@/components/public/page-hero";
 import { initials } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = {
+  title: "About",
+  description: "Who we are: the mission, values and leadership team behind Sonex-Digital.",
+};
 
 interface ValueItem { title: string; body: string }
 interface StatItem { label: string; value: string }
@@ -52,8 +56,14 @@ export default async function AboutPage() {
       </Section>
 
       <section className="relative">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="w-full object-cover" src="/company.jpg" alt="The Sonex-Digital leadership team in the boardroom" />
+        <Image
+          src="/company.jpg"
+          alt="The Sonex-Digital leadership team in the boardroom"
+          width={1672}
+          height={713}
+          sizes="100vw"
+          className="w-full object-cover"
+        />
         {/* Overlays the photo on md+; flows under it on phones. */}
         <div className="flex flex-col justify-end md:absolute md:inset-0 md:z-10">
           <div className="mx-auto w-full max-w-6xl px-4 py-8 md:py-10">
@@ -118,6 +128,8 @@ export default async function AboutPage() {
                     <img
                       src={p.avatar_url}
                       alt={p.full_name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-32 w-32 rounded-full object-cover ring-4 ring-surface"
                     />
                   ) : (

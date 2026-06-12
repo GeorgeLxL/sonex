@@ -9,7 +9,7 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap"
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://sonex-digital.com"),
   title: { default: "Sonex-Digital", template: "%s — Sonex-Digital" },
   description:
     "We design and build software that moves businesses forward — web, mobile, ERP and AI systems.",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "Sonex-Digital",
     description:
       "We design and build software that moves businesses forward — web, mobile, ERP and AI systems.",
-    images: ["/og.png"],
+    images: ["/og.jpg"],
   },
 };
 
