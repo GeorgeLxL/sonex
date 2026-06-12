@@ -63,7 +63,7 @@ export default async function CaseStudyPage({
             {service && (
               <Link
                 href={`/services#${service.slug}`}
-                className="rounded-md border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent hover:bg-accent/20"
+                className="rounded border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent hover:bg-accent/20"
               >
                 {service.title}
               </Link>
@@ -82,7 +82,7 @@ export default async function CaseStudyPage({
             <img
               src={work.cover_url}
               alt={work.title}
-              className="mt-8 w-full rounded-2xl object-cover"
+              className="mt-8 w-full rounded object-cover"
             />
           )}
 

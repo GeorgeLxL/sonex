@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Linkedin, Twitter, Github, Facebook, Instagram, Youtube } from "lucide-react";
+import { Linkedin, Twitter, Github, Facebook, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { NavLinks } from "@/components/public/nav-links";
+import { RevealInit } from "@/components/reveal-init";
 import { getContent, text } from "@/lib/content";
 
 const SOCIAL_ICONS = [
@@ -26,6 +27,8 @@ const NAV = [
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const content = await getContent(["site.name", "site.tagline", "contact.info", "site.social"]);
   const siteName = text(content, "site.name", "text", "Sonex-Digital");
+  const email = text(content, "contact.info", "email", "hello@example.com");
+  const phone = text(content, "contact.info", "phone");
   // Only links configured in the CMS (site.social) are rendered.
   const socials = SOCIAL_ICONS.map((s) => ({
     ...s,
@@ -34,6 +37,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <div className="flex min-h-screen flex-col">
+      <RevealInit />
       <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link href="/" aria-label={siteName} className="flex items-center">
@@ -75,7 +79,7 @@ export default async function PublicLayout({ children }: { children: React.React
                     target="_blank"
                     rel="noreferrer"
                     aria-label={label}
-                    className="rounded-lg border border-accent/40 p-2.5 text-accent transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                    className="rounded border border-accent/40 p-2.5 text-accent transition-colors hover:border-accent hover:bg-accent hover:text-white"
                   >
                     <Icon size={22} />
                   </a>
@@ -96,10 +100,23 @@ export default async function PublicLayout({ children }: { children: React.React
           </div>
           <div className="md:col-span-4">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Contact</div>
-            <ul className="space-y-2 text-sm text-muted">
-              <li>{text(content, "contact.info", "email", "hello@example.com")}</li>
-              <li>{text(content, "contact.info", "phone")}</li>
-              <li>{text(content, "contact.info", "address")}</li>
+            <ul className="space-y-3 text-sm text-muted">
+              <li className="flex items-center gap-2.5">
+                <Mail size={16} className="shrink-0 text-accent" />
+                <a href={`mailto:${email}`} className="hover:text-ink hover:underline">
+                  {email}
+                </a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Phone size={16} className="shrink-0 text-accent" />
+                <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="hover:text-ink hover:underline">
+                  {phone}
+                </a>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <MapPin size={16} className="mt-0.5 shrink-0 text-accent" />
+                {text(content, "contact.info", "address")}
+              </li>
             </ul>
           </div>
         </div>

@@ -170,7 +170,7 @@ export function PayrollManager({
         </div>
         {baseSalaries.length === 0 && <Empty>No base salaries set — drafts cannot be generated without them.</Empty>}
         {baseSalaries.length > 0 && (
-          <div className="overflow-x-auto rounded-lg border border-line">
+          <div className="overflow-x-auto rounded border border-line">
             <table className="w-full bg-surface text-sm">
               <thead>
                 <tr className="border-b border-line text-left text-xs text-muted">

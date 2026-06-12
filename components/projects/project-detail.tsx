@@ -142,7 +142,7 @@ export function ProjectDetail({
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1 rounded-lg border border-line bg-surface p-1">
+        <div className="flex flex-wrap gap-1 rounded border border-line bg-surface p-1">
           {tabs.map((t) => (
             <button
               key={t.key}
@@ -216,7 +216,7 @@ export function ProjectDetail({
         <div className="space-y-2">
           {archivedTasks.length === 0 && <Empty>Archive is empty.</Empty>}
           {archivedTasks.map((t) => (
-            <div key={t.id} className="flex items-center justify-between rounded-lg border border-line bg-surface p-3">
+            <div key={t.id} className="flex items-center justify-between rounded border border-line bg-surface p-3">
               <div>
                 <div className="text-sm font-medium">{t.title}</div>
                 <div className="text-xs text-muted">archived {formatDateTime(t.archived_at ?? undefined)}</div>
@@ -296,7 +296,7 @@ function TaskCard({ task }: { task: TaskRow }) {
   const today = todayInTz("Asia/Tokyo");
   const overdue = task.due_date && task.due_date < today && task.status !== "done";
   return (
-    <div className="rounded-lg border border-line bg-surface p-3 shadow-sm">
+    <div className="rounded border border-line bg-surface p-3 shadow-sm">
       <div className="text-sm font-medium">{task.title}</div>
       <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
         {task.is_urgent && <Badge tone="danger">Urgent</Badge>}
@@ -523,7 +523,7 @@ function MilestonesPanel({
       {milestones.length === 0 && <Empty>No milestones — the project is paid as a whole.</Empty>}
 
       {milestones.map((m) => (
-        <div key={m.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-surface p-4">
+        <div key={m.id} className="flex flex-wrap items-center justify-between gap-3 rounded border border-line bg-surface p-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold">{m.title}</span>
@@ -650,7 +650,7 @@ function MembersPanel({
 
       <div className="grid gap-2 sm:grid-cols-2">
         {members.map((m) => (
-          <div key={m.user_id} className="flex items-center justify-between rounded-lg border border-line bg-surface p-3">
+          <div key={m.user_id} className="flex items-center justify-between rounded border border-line bg-surface p-3">
             <div className="flex items-center gap-3">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/15 text-xs font-semibold text-accent">
                 {initials(m.full_name)}
@@ -690,7 +690,7 @@ function MembersPanel({
         <div className="max-h-80 space-y-2 overflow-y-auto">
           {candidates.length === 0 && <Empty>Everyone is already on this project.</Empty>}
           {candidates.map((a) => (
-            <div key={a.id} className="flex items-center justify-between rounded-lg border border-line bg-surface p-3">
+            <div key={a.id} className="flex items-center justify-between rounded border border-line bg-surface p-3">
               <div>
                 <div className="text-sm font-medium">{a.full_name}</div>
                 <div className="text-xs text-muted">

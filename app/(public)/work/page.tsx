@@ -65,7 +65,7 @@ export default async function WorkPage({
           ))}
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((w) => (
             <WorkCard key={w.id} work={w as WorkCardData} />
           ))}

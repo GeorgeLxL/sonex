@@ -287,7 +287,7 @@ function BoardColumnView<T>({
       className={cn(
         "flex flex-col",
         boxed
-          ? "rounded-lg border border-line bg-surface-2/50"
+          ? "rounded border border-line bg-surface-2/50"
           : "min-w-52 flex-1",
         disabled && "opacity-40",
         isOver && !disabled && (boxed ? "border-accent" : "bg-accent/5"),

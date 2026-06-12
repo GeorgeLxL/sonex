@@ -11,6 +11,8 @@ export const metadata: Metadata = { title: "Contact" };
 export default async function ContactPage() {
   const db = await supabaseServer();
   const content = await getContent(["contact.info"]);
+  const email = text(content, "contact.info", "email", "hello@example.com");
+  const phone = text(content, "contact.info", "phone");
 
   return (
     <>
@@ -25,16 +27,20 @@ export default async function ContactPage() {
             <ContactForm />
           </div>
           <aside className="space-y-4">
-            <div className="rounded-lg border border-line bg-surface p-5">
+            <div className="rounded border border-line bg-surface p-5">
               <h2 className="text-sm font-semibold">Contact info</h2>
               <ul className="mt-3 space-y-3 text-sm text-muted">
                 <li className="flex items-center gap-2">
                   <Mail size={15} className="text-accent" />
-                  {text(content, "contact.info", "email", "hello@example.com")}
+                  <a href={`mailto:${email}`} className="hover:text-accent hover:underline">
+                    {email}
+                  </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone size={15} className="text-accent" />
-                  {text(content, "contact.info", "phone")}
+                  <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="hover:text-accent hover:underline">
+                    {phone}
+                  </a>
                 </li>
                 <li className="flex items-start gap-2">
                   <MapPin size={15} className="mt-0.5 shrink-0 text-accent" />

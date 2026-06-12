@@ -49,7 +49,7 @@ export function BlogReview({ posts }: { posts: PendingPost[] }) {
       {error && <p className="mb-2 text-sm text-danger">{error}</p>}
       <div className="space-y-3">
         {posts.map((p) => (
-          <details key={p.id} className="rounded-lg border border-line bg-bg/50">
+          <details key={p.id} className="rounded border border-line bg-bg/50">
             <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3 p-3">
               <div className="flex min-w-0 items-center gap-3">
                 {p.cover_url ? (

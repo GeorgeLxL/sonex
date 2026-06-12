@@ -111,7 +111,6 @@ export async function checkOut(): Promise<ActionResult> {
       .select("early_time")
       .eq("user_id", auth.userId)
       .eq("status", "approved")
-      .eq("type", "early_leave")
       .lte("start_date", today)
       .gte("end_date", row.work_date)
       .not("early_time", "is", null)
@@ -140,29 +139,48 @@ const leaveSchema = z
   .object({
     start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    type: z.enum(["vacation", "sick", "personal", "unpaid", "early_leave"]),
+    type: z.string().trim().min(1).max(100), // validated against leave_types
     early_time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
     reason: z.string().trim().max(1000).optional(),
   })
-  .refine((v) => v.end_date >= v.start_date, { message: "End date before start date" })
-  .refine((v) => v.type !== "early_leave" || !!v.early_time, {
-    message: "Early leave needs the time you plan to leave",
-  });
+  .refine((v) => v.end_date >= v.start_date, { message: "End date before start date" });
+
+/** Look up a leave reason in the admin-managed catalog. */
+async function getLeaveType(name: string) {
+  const db = await supabaseServer();
+  const { data } = await db
+    .from("leave_types")
+    .select("name, is_paid, requires_time, single_day")
+    .eq("name", name)
+    .maybeSingle();
+  return data as {
+    name: string;
+    is_paid: boolean;
+    requires_time: boolean;
+    single_day: boolean;
+  } | null;
+}
 
 export async function requestLeave(input: unknown): Promise<ActionResult> {
   const auth = await requireAuth();
   const parsed = leaveSchema.safeParse(input);
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
 
+  const leaveType = await getLeaveType(parsed.data.type);
+  if (!leaveType) return fail("Unknown leave reason");
+  if (leaveType.requires_time && !parsed.data.early_time) {
+    return fail("This leave reason needs the time you plan to leave");
+  }
+
   const db = await supabaseServer();
-  const isEarly = parsed.data.type === "early_leave";
+  const isEarly = leaveType.requires_time;
+  const oneDay = isEarly || leaveType.single_day;
   const { error } = await db.from("leave_requests").insert({
     ...parsed.data,
-    // early leave is a single day, paid
-    end_date: isEarly ? parsed.data.start_date : parsed.data.end_date,
+    end_date: oneDay ? parsed.data.start_date : parsed.data.end_date,
     early_time: isEarly ? parsed.data.early_time : null,
     user_id: auth.userId,
-    is_paid: parsed.data.type !== "unpaid",
+    is_paid: leaveType.is_paid, // catalog default; approver may override
   });
   if (error) return fail(error.message);
 
@@ -186,6 +204,76 @@ export async function requestLeave(input: unknown): Promise<ActionResult> {
   return { ok: true };
 }
 
+const adminLeaveSchema = z
+  .object({
+    user_id: z.string().uuid(),
+    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    type: z.string().trim().min(1).max(100), // validated against leave_types
+    early_time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+    reason: z.string().trim().max(1000).optional(),
+    is_paid: z.boolean(),
+    status: z.enum(["pending", "approved", "rejected"]),
+  })
+  .refine((v) => v.end_date >= v.start_date, { message: "End date before start date" });
+
+/** Admin CRUD over leave records: create on behalf of staff, or edit
+ *  any field (dates, type, reason, paid/unpaid, status) afterwards. */
+export async function adminSaveLeave(
+  leaveId: string | null,
+  input: unknown,
+): Promise<ActionResult> {
+  const auth = await requireAuth();
+  if (!can(auth, "attendance", "write")) return fail("No permission to manage leave");
+  const parsed = adminLeaveSchema.safeParse(input);
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
+
+  const leaveType = await getLeaveType(parsed.data.type);
+  if (!leaveType) return fail("Unknown leave reason");
+  if (leaveType.requires_time && !parsed.data.early_time) {
+    return fail("This leave reason needs a time");
+  }
+  const isEarly = leaveType.requires_time;
+  const oneDay = isEarly || leaveType.single_day;
+  const reviewed = parsed.data.status !== "pending";
+  const row: Record<string, unknown> = {
+    ...parsed.data,
+    end_date: oneDay ? parsed.data.start_date : parsed.data.end_date,
+    early_time: isEarly ? parsed.data.early_time : null,
+    reason: parsed.data.reason || null,
+    reviewed_by: reviewed ? auth.userId : null,
+    reviewed_at: reviewed ? new Date().toISOString() : null,
+  };
+
+  const db = await supabaseServer();
+  const { error } = leaveId
+    ? await db.from("leave_requests").update(row).eq("id", leaveId)
+    : await db.from("leave_requests").insert(row);
+  if (error) return fail(error.message);
+
+  if (!leaveId && parsed.data.user_id !== auth.userId) {
+    await db.rpc("notify_user", {
+      p_user: parsed.data.user_id,
+      p_type: "leave_recorded",
+      p_title: "Leave recorded for you",
+      p_body: `${parsed.data.start_date} → ${row.end_date} (${parsed.data.type}, ${parsed.data.is_paid ? "paid" : "unpaid"})`,
+      p_link: "/workspace/attendance",
+    });
+  }
+  revalidate();
+  return { ok: true };
+}
+
+export async function adminDeleteLeave(leaveId: string): Promise<ActionResult> {
+  const auth = await requireAuth();
+  if (!can(auth, "attendance", "write")) return fail("No permission to manage leave");
+  const db = await supabaseServer();
+  const { error } = await db.from("leave_requests").delete().eq("id", leaveId);
+  if (error) return fail(error.message);
+  revalidate();
+  return { ok: true };
+}
+
 export async function cancelLeave(leaveId: string): Promise<ActionResult> {
   await requireAuth();
   const db = await supabaseServer();
@@ -203,6 +291,7 @@ export async function reviewLeave(
   leaveId: string,
   approve: boolean,
   note?: string,
+  isPaid?: boolean, // approver's call - overrides the type default
 ): Promise<ActionResult> {
   const auth = await requireAuth();
   if (!can(auth, "attendance", "write")) return fail("No permission to review leave");
@@ -222,6 +311,7 @@ export async function reviewLeave(
       reviewed_by: auth.userId,
       reviewed_at: new Date().toISOString(),
       review_note: note ?? null,
+      ...(approve && isPaid !== undefined ? { is_paid: isPaid } : {}),
     })
     .eq("id", leaveId);
   if (error) return fail(error.message);
@@ -230,7 +320,10 @@ export async function reviewLeave(
     p_user: leave.user_id,
     p_type: "leave_reviewed",
     p_title: approve ? "Leave approved" : "Leave rejected",
-    p_body: `${leave.start_date} → ${leave.end_date}${note ? ` — ${note}` : ""}`,
+    p_body:
+      `${leave.start_date} → ${leave.end_date}` +
+      (approve && isPaid !== undefined ? (isPaid ? " (paid)" : " (unpaid)") : "") +
+      (note ? ` — ${note}` : ""),
     p_link: "/workspace/attendance",
   });
   revalidate();

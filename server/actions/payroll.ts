@@ -72,7 +72,7 @@ export async function generateDrafts(month: string): Promise<ActionResult> {
     db.from("salary_records").select("user_id").eq("month", start),
     db
       .from("leave_requests")
-      .select("user_id, start_date, end_date, is_paid")
+      .select("user_id, start_date, end_date, is_paid, early_time")
       .eq("status", "approved")
       .eq("is_paid", false)
       .lte("start_date", end)
@@ -98,9 +98,15 @@ export async function generateDrafts(month: string): Promise<ActionResult> {
 
   const unpaidDays = new Map<string, number>();
   for (const l of leavesRes.data ?? []) {
-    const from = l.start_date < start ? start : l.start_date;
-    const to = l.end_date > end ? end : l.end_date;
-    unpaidDays.set(l.user_id, (unpaidDays.get(l.user_id) ?? 0) + workdaysBetween(from, to));
+    // Unpaid early-leave is a partial day -> half a day's deduction.
+    const days =
+      l.early_time != null
+        ? 0.5
+        : workdaysBetween(
+            l.start_date < start ? start : l.start_date,
+            l.end_date > end ? end : l.end_date,
+          );
+    unpaidDays.set(l.user_id, (unpaidDays.get(l.user_id) ?? 0) + days);
   }
   for (const a of absentRes.data ?? []) {
     unpaidDays.set(a.user_id, (unpaidDays.get(a.user_id) ?? 0) + 1);

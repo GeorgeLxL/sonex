@@ -37,7 +37,7 @@ export default async function WorkspaceProjectsPage() {
             <Link
               key={p.id}
               href={`/workspace/projects/${p.id}`}
-              className="rounded-lg border border-line bg-surface p-4 transition-colors hover:border-accent"
+              className="rounded border border-line bg-surface p-4 transition-colors hover:border-accent"
             >
               <div className="flex items-start justify-between gap-2">
                 <span className="font-semibold">{p.name}</span>

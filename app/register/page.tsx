@@ -27,7 +27,7 @@ export default async function RegisterPage() {
           <p className="mt-1 text-sm text-muted">
             New accounts need approval from an administrator before signing in.
           </p>
-          <div className="mt-6 rounded-lg border border-line bg-surface p-6">
+          <div className="mt-6 rounded border border-line bg-surface p-6">
             <RegisterForm />
           </div>
           <p className="mt-4 text-center text-sm text-muted">

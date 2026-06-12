@@ -23,29 +23,29 @@ export default async function BlogPage() {
         <p className="text-sm text-muted">No posts yet — check back soon.</p>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="gap-4 max-w-5xl mx-auto">
         {(posts ?? []).map((p) => (
           <Link
             key={p.id}
             href={`/blog/${p.slug}`}
-            className="group overflow-hidden rounded-lg border border-line bg-surface transition-colors hover:border-accent"
+            className="group block sm:flex mb-5 overflow-hidden rounded border border-line/60 bg-surface shadow-md shadow-black/5 transition-all hover:-translate-y-1 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10"
           >
             {p.cover_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={p.cover_url}
                 alt=""
-                className="h-44 w-full object-cover transition-transform group-hover:scale-[1.02]"
+                className="h-32 w-full sm:w-32 shrink-0 object-cover transition-transform group-hover:scale-[1.02]"
               />
             ) : (
-              <div className="flex h-44 w-full items-center justify-center bg-surface-2 text-4xl font-black text-line">
+              <div className="h-36 w-36 shrink-0 items-center justify-center bg-surface-2 text-4xl font-black text-line">
                 SX
               </div>
             )}
-            <div className="p-5">
-              <h2 className="font-semibold group-hover:text-accent">{p.title}</h2>
-              <p className="mt-2 line-clamp-3 text-sm text-muted">{p.excerpt}</p>
-              <div className="mt-4 flex items-center justify-between text-xs text-muted">
+            <div className="p-3 pr-8 w-full flex flex-col">
+              <h3 className="font-semibold group-hover:text-accent">{p.title}</h3>
+              <p className="mt-2 mb-4 line-clamp-2 text-sm text-muted">{p.excerpt}</p>
+              <div className="mt-auto flex items-center justify-between text-xs text-muted">
                 <span>{p.author_name}</span>
                 <time>{formatDateHuman(p.published_at?.slice(0, 10))}</time>
               </div>

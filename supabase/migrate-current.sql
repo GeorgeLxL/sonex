@@ -140,3 +140,65 @@ end $$;
 drop trigger if exists trg_milestone_payment_ready on project_milestones;
 create trigger trg_milestone_payment_ready after update on project_milestones
   for each row execute function notify_payment_ready_milestone();
+
+-- ---------------- 7. admins manage leave records directly -------
+drop policy if exists leave_insert on leave_requests;
+create policy leave_insert on leave_requests for insert to authenticated
+  with check ((user_id = auth.uid() and status = 'pending')
+              or has_perm('attendance', 'write'));
+
+-- ---------------- 8. admin-managed leave reason catalog ----------
+create table if not exists leave_types (
+  id            uuid primary key default gen_random_uuid(),
+  name          text unique not null,
+  is_paid       boolean not null default true,
+  requires_time boolean not null default false,
+  sort_order    int not null default 0
+);
+alter table leave_types enable row level security;
+drop policy if exists leave_types_read on leave_types;
+create policy leave_types_read on leave_types for select to authenticated using (true);
+drop policy if exists leave_types_write on leave_types;
+create policy leave_types_write on leave_types for all to authenticated
+  using (has_perm('attendance','write')) with check (has_perm('attendance','write'));
+grant all on leave_types to anon, authenticated, service_role;
+
+alter table leave_types add column if not exists single_day boolean not null default false;
+
+insert into leave_types (name, is_paid, requires_time, single_day, sort_order) values
+  ('Vacation',     true,  false, false, 1),
+  ('Sick',         true,  false, false, 2),
+  ('Personal',     true,  false, false, 3),
+  ('Unpaid leave', false, false, false, 4),
+  ('Leave early',  true,  true,  true,  5),
+  ('Absence',      false, false, true,  6)
+on conflict (name) do nothing;
+
+update leave_types set single_day = true
+ where name in ('Leave early', 'Absence') and single_day = false;
+
+-- migrate existing requests to catalog names, then enforce the FK
+update leave_requests set type = case type
+  when 'vacation'    then 'Vacation'
+  when 'sick'        then 'Sick'
+  when 'personal'    then 'Personal'
+  when 'unpaid'      then 'Unpaid leave'
+  when 'early_leave' then 'Leave early'
+  else type end
+ where type in ('vacation','sick','personal','unpaid','early_leave');
+alter table leave_requests drop constraint if exists leave_requests_type_check;
+alter table leave_requests alter column type set default 'Vacation';
+alter table leave_requests drop constraint if exists leave_requests_type_fkey;
+alter table leave_requests add constraint leave_requests_type_fkey
+  foreign key (type) references leave_types(name) on update cascade;
+
+-- ---------------- 9. cover artwork for seeded content ------------
+update case_studies set cover_url = '/covers/' || slug || '.svg'
+ where cover_url is null
+   and slug in ('logistics-erp', 'fintech-saas', 'field-app', 'support-copilot');
+update blog_posts set cover_url = '/covers/blog-1.svg'
+ where slug = 'choosing-boring-technology' and cover_url is null;
+update blog_posts set cover_url = '/covers/blog-2.svg'
+ where slug = 'erp-mvp-scope' and cover_url is null;
+update blog_posts set cover_url = '/covers/blog-3.svg'
+ where slug = 'realtime-when-it-matters' and cover_url is null;

@@ -37,7 +37,7 @@ export function NotificationsList({ items }: { items: Notification[] }) {
 
       {items.length === 0 && <Empty>No notifications yet.</Empty>}
 
-      <div className="divide-y divide-line rounded-lg border border-line bg-surface">
+      <div className="divide-y divide-line rounded border border-line bg-surface">
         {items.map((n) => (
           <Link
             key={n.id}

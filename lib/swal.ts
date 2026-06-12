@@ -12,7 +12,7 @@ const base = Swal.mixin({
   confirmButtonColor: "rgb(var(--accent))",
   cancelButtonColor: "rgb(var(--surface-2))",
   customClass: {
-    popup: "rounded-lg border border-line text-sm",
+    popup: "rounded border border-line text-sm",
     confirmButton: "rounded px-4 py-2 text-sm font-medium",
     cancelButton: "rounded px-4 py-2 text-sm font-medium !text-ink",
   },

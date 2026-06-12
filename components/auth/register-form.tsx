@@ -10,7 +10,7 @@ export function RegisterForm() {
 
   if (state.ok) {
     return (
-      <div className="rounded-lg border border-success/40 bg-success/10 p-6 text-sm">
+      <div className="rounded border border-success/40 bg-success/10 p-6 text-sm">
         <p className="font-semibold text-success">Account created — pending approval.</p>
         <p className="mt-1 text-muted">
           An administrator has been notified. Once your account is approved you can{" "}

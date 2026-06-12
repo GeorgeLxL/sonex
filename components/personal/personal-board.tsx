@@ -66,7 +66,7 @@ export function PersonalBoard({ tasks, timezone }: { tasks: PersonalTask[]; time
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 rounded-lg border border-line bg-surface p-1">
+        <div className="flex gap-1 rounded border border-line bg-surface p-1">
           {tabs.map((t) => (
             <button
               key={t.key}
@@ -119,7 +119,7 @@ export function PersonalBoard({ tasks, timezone }: { tasks: PersonalTask[]; time
         <div className="space-y-2">
           {archived.length + completed.length === 0 && <Empty>Nothing archived or completed.</Empty>}
           {[...completed, ...archived].map((t) => (
-            <div key={t.id} className="flex items-center justify-between rounded-lg border border-line bg-surface p-3">
+            <div key={t.id} className="flex items-center justify-between rounded border border-line bg-surface p-3">
               <div>
                 <div className="text-sm font-medium">{t.title}</div>
                 <div className="text-xs text-muted">
@@ -210,7 +210,7 @@ function PersonalCard({ task, timezone }: { task: PersonalTask; timezone: string
   const deadline = task.is_recurring ? task.due_date : (task.due_date ?? task.date);
   const overdue = !task.is_recurring && deadline && deadline < today && task.status !== "done";
   return (
-    <div className="rounded-lg border border-line bg-surface p-3 shadow-sm">
+    <div className="rounded border border-line bg-surface p-3 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <span className="text-sm font-medium">{task.title}</span>
         {task.is_recurring && <Repeat size={13} className="mt-0.5 shrink-0 text-accent" />}

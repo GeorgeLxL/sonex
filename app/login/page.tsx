@@ -32,7 +32,7 @@ export default async function LoginPage({
           <p className="mt-1 text-sm text-muted">
             Sign in with the account your administrator created for you.
           </p>
-          <div className="mt-6 rounded-lg border border-line bg-surface p-6">
+          <div className="mt-6 rounded border border-line bg-surface p-6">
             <LoginForm next={next} />
           </div>
           <p className="mt-4 text-center text-sm text-muted">

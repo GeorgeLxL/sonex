@@ -118,6 +118,7 @@ const REVALIDATE: Record<string, string[]> = {
   announcements: ["/workspace", "/admin", "/admin/announcements"],
   kb: ["/workspace", "/admin"],
   staff: ["/admin/staff"],
+  attendance: ["/admin/attendance", "/workspace/attendance"],
 };
 
 function revalidateFor(perm: string) {

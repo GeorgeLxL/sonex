@@ -238,6 +238,19 @@ export const ENTITIES: Record<string, EntityDef> = {
       { name: "body", label: "Body", type: "textarea", required: true },
     ],
   },
+  leave_types: {
+    table: "leave_types",
+    perm: "attendance",
+    titleField: "name",
+    orderBy: "sort_order",
+    fields: [
+      { name: "name", label: "Reason name", type: "text", required: true },
+      { name: "is_paid", label: "Paid by default", type: "bool" },
+      { name: "requires_time", label: "Needs a time (early-leave style)", type: "bool" },
+      { name: "single_day", label: "Single day (one date, no range)", type: "bool" },
+      { name: "sort_order", label: "Sort order", type: "number" },
+    ],
+  },
   departments: {
     table: "departments",
     perm: "staff",

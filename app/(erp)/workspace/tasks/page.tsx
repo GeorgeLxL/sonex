@@ -48,7 +48,7 @@ export default async function WorkspaceTasksPage() {
                     <Link
                       key={t.id}
                       href={`/workspace/projects/${project.id}`}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface p-3 transition-colors hover:border-accent"
+                      className="flex flex-wrap items-center justify-between gap-2 rounded border border-line bg-surface p-3 transition-colors hover:border-accent"
                     >
                       <div>
                         <div className="text-sm font-medium">{t.title}</div>

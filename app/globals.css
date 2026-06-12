@@ -64,11 +64,118 @@ body {
   @apply bg-bg text-ink antialiased;
 }
 
-/* Thin scrollbars for board columns */
-.board-scroll::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
+/* Soft heading shadow: a faint accent glow + tiny depth in light
+   mode, a slightly stronger glow in dark mode. */
+.title-shadow {
+  text-shadow:
+    0 4px 18px rgb(var(--accent) / 0.4),
+    0 2px 4px rgb(0 0 0 / 0.12);
 }
-.board-scroll::-webkit-scrollbar-thumb {
-  @apply rounded bg-line;
+.dark .title-shadow {
+  text-shadow:
+    0 4px 22px rgb(var(--accent) / 0.55),
+    0 2px 4px rgb(0 0 0 / 0.4);
+}
+
+/* Themed scrollbars everywhere */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--line)) transparent;
+}
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-line;
+}
+*::-webkit-scrollbar-thumb:hover {
+  @apply bg-accent/50;
+}
+
+/* Brand text selection */
+::selection {
+  background: rgb(var(--accent) / 0.85);
+  color: white;
+}
+
+/* Visible, consistent keyboard focus */
+:focus-visible {
+  outline: 2px solid rgb(var(--accent) / 0.6);
+  outline-offset: 2px;
+}
+
+/* Dialog entrance */
+@keyframes dialog-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-dialog {
+  animation: dialog-pop 0.18s ease-out;
+}
+.animate-overlay {
+  animation: overlay-fade 0.15s ease-out;
+}
+
+/* Scroll-reveal (public site). JS adds .rv to <html>; sections marked
+   with data-reveal slide in when they enter the viewport. Without JS
+   everything stays visible. */
+html.rv [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+html.rv [data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.rv [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Lifted-corner card shadow: deep at the left/right edges, thin in the center */
+.shadow-wings {
+  box-shadow:
+    -18px 18px 18px -16px rgb(0 0 0 / 0.4),
+    18px 18px 18px -16px rgb(0 0 0 / 0.4),
+    0 8px 12px -8px rgb(0 0 0 / 0.12);
+}
+.shadow-wings:hover {
+  box-shadow:
+    -22px 26px 22px -16px rgb(0 0 0 / 0.45),
+    22px 26px 22px -16px rgb(0 0 0 / 0.45),
+    0 10px 14px -8px rgb(0 0 0 / 0.15);
+}
+.dark .shadow-wings {
+  box-shadow:
+    -18px 18px 18px -16px rgb(0 0 0 / 0.7),
+    18px 18px 18px -16px rgb(0 0 0 / 0.7),
+    0 8px 12px -8px rgb(0 0 0 / 0.3);
+}
+.dark .shadow-wings:hover {
+  box-shadow:
+    -22px 26px 22px -16px rgb(0 0 0 / 0.8),
+    22px 26px 22px -16px rgb(0 0 0 / 0.8),
+    0 10px 14px -8px rgb(0 0 0 / 0.35);
 }

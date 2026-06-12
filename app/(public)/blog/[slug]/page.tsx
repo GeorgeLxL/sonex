@@ -47,36 +47,47 @@ export default async function BlogPostPage({
 
   return (
     <article>
-      {post.cover_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.cover_url} alt="" className="max-h-[420px] w-full object-cover" />
-      )}
       <Section>
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl">
           <Link
             href="/blog"
             className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"
           >
             <ArrowLeft size={14} /> All posts
           </Link>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">{post.title}</h1>
-          <div className="mt-5 flex items-center gap-3 border-b border-line pb-6">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-xs font-semibold text-accent">
-              {initials(post.author_name)}
-            </span>
-            <div>
-              <div className="text-sm font-medium">{post.author_name}</div>
-              <time className="text-xs text-muted">
-                {formatDateHuman(post.published_at?.slice(0, 10))}
-              </time>
-            </div>
-          </div>
+
+          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-accent md:text-5xl">
+            {post.title}
+          </h1>
+          <time className="mt-3 block text-sm text-muted">
+            {formatDateHuman(post.published_at?.slice(0, 10))}
+          </time>
+
+          {post.cover_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.cover_url}
+              alt={post.title}
+              className="mt-8 w-full rounded object-cover"
+            />
+          )}
+
           <div className="mt-8 space-y-5">
             {paragraphs.map((p: string, i: number) => (
               <p key={i} className="leading-relaxed text-ink/90">
                 {p}
               </p>
             ))}
+          </div>
+
+          <div className="mt-10 flex items-center gap-3 border-t border-line pt-8">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-violet-500 text-sm font-bold text-white">
+              {initials(post.author_name)}
+            </span>
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted">Written by</div>
+              <div className="text-sm font-semibold">{post.author_name}</div>
+            </div>
           </div>
         </div>
       </Section>

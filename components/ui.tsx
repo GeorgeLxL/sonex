@@ -14,15 +14,16 @@ export function Button({
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
   const styles: Record<ButtonVariant, string> = {
-    primary: "bg-accent text-accent-ink hover:opacity-90",
-    secondary: "border border-line bg-surface hover:bg-surface-2",
+    primary:
+      "bg-accent text-accent-ink shadow-sm shadow-accent/25 hover:shadow-md hover:shadow-accent/35 hover:brightness-110",
+    secondary: "border border-line bg-surface hover:border-accent/40 hover:bg-surface-2",
     ghost: "text-muted hover:bg-surface-2 hover:text-ink",
-    danger: "bg-danger text-white hover:opacity-90",
+    danger: "bg-danger text-white shadow-sm shadow-danger/25 hover:brightness-110",
   };
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex items-center justify-center gap-2 rounded px-3.5 py-2 text-sm font-medium transition-all active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
         styles[variant],
         className,
       )}
@@ -125,7 +126,9 @@ export function FileInput({
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-lg border border-line bg-surface p-4", className)}>{children}</div>
+    <div className={cn("rounded border border-line bg-surface p-4 shadow-sm shadow-black/[.03] transition-shadow", className)}>
+      {children}
+    </div>
   );
 }
 
@@ -185,12 +188,13 @@ export function Dialog({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-[8vh]"
+      // !m-0 defeats parent space-y-* margins that would shift the overlay.
+      className="animate-overlay fixed inset-0 z-50 !m-0 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-[8vh] backdrop-blur-[2px]"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
         className={cn(
-          "w-full rounded-lg border border-line bg-surface p-5 shadow-xl",
+          "animate-dialog w-full rounded border border-line bg-surface p-5 shadow-2xl shadow-black/20",
           wide ? "max-w-2xl" : "max-w-md",
         )}
       >
@@ -210,7 +214,7 @@ export function Dialog({
 
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-muted">
+    <div className="rounded border border-dashed border-line p-8 text-center text-sm text-muted">
       {children}
     </div>
   );
@@ -220,7 +224,7 @@ export function PageTitle({ title, sub, actions }: { title: string; sub?: string
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h1 className="text-xl font-semibold">{title}</h1>
+        <h1 className="font-display text-xl font-semibold">{title}</h1>
         {sub && <p className="mt-0.5 text-sm text-muted">{sub}</p>}
       </div>
       {actions}

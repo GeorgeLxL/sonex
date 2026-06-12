@@ -27,7 +27,7 @@ export function TechChip({ name }: { name: string }) {
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className="flex w-24 shrink-0 flex-col items-center gap-2 rounded-lg border border-line bg-surface p-3">
+    <div className="flex w-24 shrink-0 flex-col items-center gap-2 rounded border border-line bg-surface p-3">
       {failed ? (
         <span className="flex h-9 w-9 items-center justify-center rounded bg-accent/15 text-sm font-bold text-accent">
           {name.slice(0, 2).toUpperCase()}

@@ -19,7 +19,7 @@ export function SiteContentEditor({
         Page copy as JSON per section — edit a value and save. The public site updates immediately.
       </p>
       {items.map((item) => (
-        <details key={item.key} className="rounded-lg border border-line bg-surface">
+        <details key={item.key} className="rounded border border-line bg-surface">
           <summary className="cursor-pointer px-4 py-3 text-sm font-medium">{item.key}</summary>
           <form
             className="space-y-3 px-4 pb-4"

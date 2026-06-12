@@ -83,7 +83,7 @@ export default async function StaffPage({
       ) : staff.length === 0 ? (
         <Empty>No staff.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-line">
+        <div className="overflow-x-auto rounded border border-line">
           <table className="w-full bg-surface text-sm">
             <thead>
               <tr className="border-b border-line text-left text-xs text-muted">

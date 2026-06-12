@@ -3,7 +3,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
 import { todayInTz } from "@/lib/dates";
 import { PageTitle } from "@/components/ui";
-import { AttendancePanel, type AttendanceRow, type LeaveRow } from "@/components/attendance/attendance-panel";
+import { AttendancePanel, type AttendanceRow, type LeaveRow, type LeaveTypeRow } from "@/components/attendance/attendance-panel";
 
 export const metadata: Metadata = { title: "Attendance" };
 
@@ -12,7 +12,7 @@ export default async function WorkspaceAttendancePage() {
   const db = await supabaseServer();
   const today = todayInTz(auth.profile.timezone);
 
-  const [logsRes, leavesRes] = await Promise.all([
+  const [logsRes, leavesRes, typesRes] = await Promise.all([
     db
       .from("attendance_logs")
       .select("*")
@@ -25,6 +25,7 @@ export default async function WorkspaceAttendancePage() {
       .eq("user_id", auth.userId)
       .order("created_at", { ascending: false })
       .limit(20),
+    db.from("leave_types").select("name, is_paid, requires_time, single_day").order("sort_order"),
   ]);
 
   const logs = (logsRes.data ?? []) as AttendanceRow[];
@@ -37,6 +38,7 @@ export default async function WorkspaceAttendancePage() {
         todayLog={todayLog}
         logs={logs}
         leaves={(leavesRes.data ?? []) as LeaveRow[]}
+        leaveTypes={(typesRes.data ?? []) as LeaveTypeRow[]}
         workStart={auth.profile.work_start ?? "09:00"}
         workEnd={auth.profile.work_end ?? "18:00"}
         timezone={auth.profile.timezone}

@@ -17,6 +17,13 @@ export interface AttendanceRow {
   note: string | null;
 }
 
+export interface LeaveTypeRow {
+  name: string;
+  is_paid: boolean;
+  requires_time: boolean;
+  single_day: boolean;
+}
+
 export interface LeaveRow {
   id: string;
   start_date: string;
@@ -40,6 +47,7 @@ export function AttendancePanel({
   todayLog,
   logs,
   leaves,
+  leaveTypes,
   workStart,
   workEnd,
   timezone,
@@ -47,6 +55,7 @@ export function AttendancePanel({
   todayLog: AttendanceRow | null;
   logs: AttendanceRow[];
   leaves: LeaveRow[];
+  leaveTypes: LeaveTypeRow[];
   workStart: string;
   workEnd: string;
   timezone: string;
@@ -54,7 +63,10 @@ export function AttendancePanel({
   const router = useRouter();
   const [requesting, setRequesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [leaveType, setLeaveType] = useState("vacation");
+  const [leaveType, setLeaveType] = useState(leaveTypes[0]?.name ?? "Vacation");
+  const selectedType = leaveTypes.find((t) => t.name === leaveType);
+  const isEarlyType = selectedType?.requires_time ?? false;
+  const isSingleDay = isEarlyType || (selectedType?.single_day ?? false);
 
   // Early checkout is blocked with an alert instead of an inline error.
   async function tryCheckOut() {
@@ -126,12 +138,12 @@ export function AttendancePanel({
         {leaves.length === 0 && <Empty>No leave requests.</Empty>}
         <div className="space-y-2">
           {leaves.map((l) => (
-            <div key={l.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface p-3">
+            <div key={l.id} className="flex flex-wrap items-center justify-between gap-2 rounded border border-line bg-surface p-3">
               <div>
                 <div className="text-sm font-medium">
                   {formatDateHuman(l.start_date)} → {formatDateHuman(l.end_date)}
                   <span className="ml-2 text-xs text-muted">
-                    {l.type === "early_leave" ? "leave early" : l.type}
+                    {l.type}
                     {l.early_time && ` at ${l.early_time.slice(0, 5)}`}
                     {!l.is_paid && " (unpaid)"}
                   </span>
@@ -162,7 +174,7 @@ export function AttendancePanel({
       <div>
         <h2 className="mb-3 text-sm font-semibold">Recent attendance</h2>
         {logs.length === 0 && <Empty>No attendance records yet.</Empty>}
-        <div className="overflow-x-auto rounded-lg border border-line">
+        <div className="overflow-x-auto rounded border border-line">
           {logs.length > 0 && (
             <table className="w-full bg-surface text-sm">
               <thead>
@@ -193,10 +205,12 @@ export function AttendancePanel({
       <Dialog open={requesting} onClose={() => setRequesting(false)} title="Request leave">
         <form
           action={async (formData: FormData) => {
-            const isEarly = formData.get("type") === "early_leave";
+            const chosen = leaveTypes.find((t) => t.name === formData.get("type"));
+            const isEarly = chosen?.requires_time ?? false;
+            const oneDay = isEarly || (chosen?.single_day ?? false);
             const result = await requestLeave({
               start_date: formData.get("start_date"),
-              end_date: isEarly ? formData.get("start_date") : formData.get("end_date"),
+              end_date: oneDay ? formData.get("start_date") : formData.get("end_date"),
               type: formData.get("type"),
               early_time: isEarly ? formData.get("early_time") : undefined,
               reason: (formData.get("reason") as string) || undefined,
@@ -210,26 +224,26 @@ export function AttendancePanel({
           className="space-y-4"
         >
           <div>
-            <Label>Type</Label>
+            <Label>Reason</Label>
             <Select name="type" value={leaveType} onChange={(e) => setLeaveType(e.target.value)}>
-              <option value="vacation">Vacation (paid)</option>
-              <option value="sick">Sick (paid)</option>
-              <option value="personal">Personal (paid)</option>
-              <option value="unpaid">Unpaid leave</option>
-              <option value="early_leave">Leave early (single day, paid)</option>
+              {leaveTypes.map((t) => (
+                <option key={t.name} value={t.name}>
+                  {t.name} ({t.is_paid ? "paid" : "unpaid"})
+                </option>
+              ))}
             </Select>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label>{leaveType === "early_leave" ? "Date *" : "From *"}</Label>
+              <Label>{isSingleDay ? "Date *" : "From *"}</Label>
               <Input name="start_date" type="date" required />
             </div>
-            {leaveType === "early_leave" ? (
+            {isEarlyType ? (
               <div>
                 <Label>Leave at (your local time) *</Label>
                 <Input name="early_time" type="time" required />
               </div>
-            ) : (
+            ) : isSingleDay ? null : (
               <div>
                 <Label>To *</Label>
                 <Input name="end_date" type="date" required />

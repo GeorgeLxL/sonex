@@ -20,7 +20,7 @@ export function ArchivedProjects({ projects }: { projects: ProjectRow[] }) {
         {projects.map((p) => (
           <div
             key={p.id}
-            className="flex items-center justify-between rounded-lg border border-line bg-surface p-3"
+            className="flex items-center justify-between rounded border border-line bg-surface p-3"
           >
             <div>
               <div className="text-sm font-medium">{p.name}</div>

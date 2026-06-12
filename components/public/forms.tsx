@@ -11,7 +11,7 @@ export function ContactForm() {
 
   if (state.ok) {
     return (
-      <div className="rounded-lg border border-success/40 bg-success/10 p-6 text-sm">
+      <div className="rounded border border-success/40 bg-success/10 p-6 text-sm">
         <p className="font-semibold text-success">Message sent.</p>
         <p className="mt-1 text-muted">We will get back to you within one business day.</p>
       </div>
@@ -73,7 +73,7 @@ export function ApplicationForm({ jobs }: { jobs: { id: string; title: string }[
 
   if (state.ok) {
     return (
-      <div className="rounded-lg border border-success/40 bg-success/10 p-6 text-sm">
+      <div className="rounded border border-success/40 bg-success/10 p-6 text-sm">
         <p className="font-semibold text-success">Application received.</p>
         <p className="mt-1 text-muted">Thanks for applying — we review every application and reply within a week.</p>
       </div>

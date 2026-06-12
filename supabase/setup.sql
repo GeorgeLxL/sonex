@@ -677,12 +677,21 @@ create table attendance_logs (
 );
 create index idx_attendance_user on attendance_logs(user_id);
 
+create table leave_types (
+  id            uuid primary key default gen_random_uuid(),
+  name          text unique not null,
+  is_paid       boolean not null default true,   -- default; admin can override per request
+  requires_time boolean not null default false,  -- early-leave style: needs a time
+  single_day    boolean not null default false,  -- one date instead of a range
+  sort_order    int not null default 0
+);
+
 create table leave_requests (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references profiles(id) on delete cascade,
   start_date  date not null,
   end_date    date not null,
-  type        text not null default 'vacation' check (type in ('vacation','sick','personal','unpaid','early_leave')),
+  type        text not null default 'Vacation' references leave_types(name) on update cascade,
   is_paid     boolean not null default true,
   early_time  time,                              -- early_leave: may check out after this
   reason      text,
@@ -866,6 +875,7 @@ alter table task_attachments          enable row level security;
 alter table personal_tasks            enable row level security;
 alter table personal_task_occurrences enable row level security;
 alter table attendance_logs           enable row level security;
+alter table leave_types               enable row level security;
 alter table leave_requests            enable row level security;
 alter table announcements             enable row level security;
 alter table kb_articles               enable row level security;
@@ -1082,10 +1092,15 @@ create policy attendance_insert on attendance_logs for insert to authenticated
 create policy attendance_update on attendance_logs for update to authenticated
   using (user_id = auth.uid() or has_perm('attendance','write'));
 
+create policy leave_types_read on leave_types for select to authenticated using (true);
+create policy leave_types_write on leave_types for all to authenticated
+  using (has_perm('attendance','write')) with check (has_perm('attendance','write'));
+
 create policy leave_select on leave_requests for select to authenticated
   using (user_id = auth.uid() or has_perm('attendance','read'));
 create policy leave_insert on leave_requests for insert to authenticated
-  with check (user_id = auth.uid() and status = 'pending');
+  with check ((user_id = auth.uid() and status = 'pending')
+              or has_perm('attendance', 'write'));
 create policy leave_update on leave_requests for update to authenticated
   using (has_perm('attendance','write'));
 create policy leave_delete on leave_requests for delete to authenticated
@@ -1221,6 +1236,15 @@ join (values
 insert into departments (name) values
   ('Engineering'), ('Design'), ('Marketing'), ('HR'), ('Finance'), ('Management');
 
+-- ---------------- leave reasons (admin-managed catalog) ---------
+insert into leave_types (name, is_paid, requires_time, single_day, sort_order) values
+  ('Vacation',     true,  false, false, 1),
+  ('Sick',         true,  false, false, 2),
+  ('Personal',     true,  false, false, 3),
+  ('Unpaid leave', false, false, false, 4),
+  ('Leave early',  true,  true,  true,  5),
+  ('Absence',      false, false, true,  6);
+
 -- ---------------- site content ----------------------------------
 insert into site_content (key, value) values
   ('site.name',    '{"text": "Sonex-Digital"}'),
@@ -1300,8 +1324,8 @@ insert into capabilities (title, description, icon, sort_order) values
   ('Data Science', 'We make raw business data clean, connected and queryable - dashboards and pipelines your decisions can stand on.', 'database', 6);
 
 -- ---------------- case studies ------------------------------------
-insert into case_studies (slug, title, client_name, category, summary, body, technologies, service_id, sort_order)
-select v.slug, v.title, v.client_name, v.category, v.summary, v.body, v.techs::text[], s.id, v.sort_order
+insert into case_studies (slug, title, client_name, category, summary, body, technologies, service_id, cover_url, sort_order)
+select v.slug, v.title, v.client_name, v.category, v.summary, v.body, v.techs::text[], s.id, '/covers/' || v.slug || '.svg', v.sort_order
 from (values
   ('logistics-erp', 'Logistics ERP replacing 40 spreadsheets', 'Meridian Freight', 'ERP',
    'A dispatch, billing and fleet system for a 200-truck logistics firm - invoice time cut from 3 days to 20 minutes.',
@@ -1344,10 +1368,10 @@ insert into job_posts (title, department, location, employment_type, description
   ('DevOps Engineer', 'Engineering', 'Remote', 'Contract', 'Build and maintain CI/CD, IaC and observability across client projects on AWS and Vercel.', 'Terraform or Pulumi; GitHub Actions; production AWS experience; security mindset.', '$90-$120/hr', true, 3);
 
 -- ---------------- blog posts -------------------------------------------
-insert into blog_posts (slug, title, excerpt, body, is_published, approval_status) values
-  ('choosing-boring-technology', 'Why we choose boring technology', 'Innovation tokens are scarce. Spend them on your product, not your stack.', 'Every project gets a limited number of innovation tokens. Spend them on the thing that makes your product different - not on a novel database, a beta framework and an experimental deploy pipeline at the same time.' || E'\n\n' || 'When we scope a project, the stack question takes ten minutes: proven framework, proven database, proven hosting. All the creativity budget goes where it pays - your domain, your users, your edge.' || E'\n\n' || 'Boring technology is not slow technology. It is technology whose failure modes are documented, whose hires are easy, and whose upgrades do not eat quarters.', true, 'approved'),
-  ('erp-mvp-scope', 'Scoping an ERP that actually ships', 'The fastest way to fail an ERP project is to build all of it at once.', 'ERP projects fail by scope, not by code. The systems that succeed start with the workflow that hurts most - usually projects or invoicing - and expand module by module on a live system with real users.' || E'\n\n' || 'Our rule: the first release must replace one painful spreadsheet within eight weeks. Real users on real data expose more truth in a week than requirement workshops do in a month.' || E'\n\n' || 'From there, each module earns its place. HR when hiring picks up. Payroll when headcount justifies it. Reports when there is data worth reporting on.', true, 'approved'),
-  ('realtime-when-it-matters', 'Realtime where it matters, requests everywhere else', 'Not every screen needs a websocket. Most need a fast query.', 'Realtime is a feature, not an architecture. We subscribe to the few surfaces where live updates change behavior - boards, comments, notifications - and use plain queries for everything else.' || E'\n\n' || 'The payoff is real: costs drop, bugs drop, and nobody notices, which is the point. Users experience speed, not the plumbing behind it.' || E'\n\n' || 'If you are debating realtime for a screen, ask one question: will a user act differently within five seconds of this data changing? If not, a fast query wins.', true, 'approved');
+insert into blog_posts (slug, title, excerpt, body, cover_url, is_published, approval_status) values
+  ('choosing-boring-technology', 'Why we choose boring technology', 'Innovation tokens are scarce. Spend them on your product, not your stack.', 'Every project gets a limited number of innovation tokens. Spend them on the thing that makes your product different - not on a novel database, a beta framework and an experimental deploy pipeline at the same time.' || E'\n\n' || 'When we scope a project, the stack question takes ten minutes: proven framework, proven database, proven hosting. All the creativity budget goes where it pays - your domain, your users, your edge.' || E'\n\n' || 'Boring technology is not slow technology. It is technology whose failure modes are documented, whose hires are easy, and whose upgrades do not eat quarters.', '/covers/blog-1.svg', true, 'approved'),
+  ('erp-mvp-scope', 'Scoping an ERP that actually ships', 'The fastest way to fail an ERP project is to build all of it at once.', 'ERP projects fail by scope, not by code. The systems that succeed start with the workflow that hurts most - usually projects or invoicing - and expand module by module on a live system with real users.' || E'\n\n' || 'Our rule: the first release must replace one painful spreadsheet within eight weeks. Real users on real data expose more truth in a week than requirement workshops do in a month.' || E'\n\n' || 'From there, each module earns its place. HR when hiring picks up. Payroll when headcount justifies it. Reports when there is data worth reporting on.', '/covers/blog-2.svg', true, 'approved'),
+  ('realtime-when-it-matters', 'Realtime where it matters, requests everywhere else', 'Not every screen needs a websocket. Most need a fast query.', 'Realtime is a feature, not an architecture. We subscribe to the few surfaces where live updates change behavior - boards, comments, notifications - and use plain queries for everything else.' || E'\n\n' || 'The payoff is real: costs drop, bugs drop, and nobody notices, which is the point. Users experience speed, not the plumbing behind it.' || E'\n\n' || 'If you are debating realtime for a screen, ask one question: will a user act differently within five seconds of this data changing? If not, a fast query wins.', '/covers/blog-3.svg', true, 'approved');
 
 -- ---------------- storage buckets ---------------------------------------
 insert into storage.buckets (id, name, public) values

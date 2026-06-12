@@ -53,7 +53,7 @@ export function BlogManager({ posts }: { posts: MyPost[] }) {
 
       <div className="space-y-2">
         {posts.map((p) => (
-          <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-surface p-3">
+          <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded border border-line bg-surface p-3">
             <div className="flex min-w-0 items-center gap-3">
               {p.cover_url ? (
                 // eslint-disable-next-line @next/next/no-img-element

@@ -64,7 +64,7 @@ export function PipelineBoard({
         }
         onMove={(p, col, sort) => moveProject(p.id, col as ProjectStatus, sort)}
         renderCard={(p) => (
-          <div className="rounded-lg border border-line bg-surface p-3 shadow-sm">
+          <div className="rounded border border-line bg-surface p-3 shadow-sm">
             <div className="flex items-start justify-between gap-2">
               <Link
                 href={`${detailBase}/${p.id}`}

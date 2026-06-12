@@ -11,7 +11,7 @@ export function TabNav({
   active: string;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap gap-1 rounded-lg border border-line bg-surface p-1">
+    <div className="mb-5 flex flex-wrap gap-1 rounded border border-line bg-surface p-1">
       {tabs.map((t) => (
         <Link
           key={t.key}

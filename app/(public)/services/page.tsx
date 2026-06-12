@@ -5,6 +5,7 @@ import { Section, SectionTitle, CtaBand } from "@/components/public/sections";
 import { IconByName } from "@/components/icon-map";
 import { TechChips } from "@/components/public/tech-chip";
 import { PageHero } from "@/components/public/page-hero";
+import { ServiceCard } from "@/components/public/service-card";
 
 export const metadata: Metadata = { title: "Services" };
 
@@ -30,15 +31,9 @@ export default async function ServicesPage() {
       />
 
       <Section>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(services.data ?? []).map((s) => (
-            <a key={s.id} href={`#${s.slug}`} className="rounded-lg border border-line bg-surface p-5 transition-colors hover:border-accent">
-              <span className="inline-flex rounded-xl bg-ink p-2.5 text-bg">
-                <IconByName name={s.icon} size={20} />
-              </span>
-              <h3 className="mt-3 font-semibold">{s.title}</h3>
-              <p className="mt-2 text-sm text-muted">{s.summary}</p>
-            </a>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {(services.data ?? []).map((s, i) => (
+            <ServiceCard key={s.id} service={s} index={i} href={`#${s.slug}`} />
           ))}
         </div>
       </Section>
@@ -48,7 +43,7 @@ export default async function ServicesPage() {
         <Section key={s.id} tint={i % 2 === 0} id={s.slug}>
           <div className="scroll-mt-24">
             <div className="flex items-center gap-4">
-              <span className="inline-flex rounded-2xl bg-ink p-3.5 text-bg">
+              <span className="inline-flex rounded bg-gradient-to-br from-accent to-violet-500 p-3.5 text-white shadow-lg shadow-accent/30">
                 <IconByName name={s.icon} size={28} />
               </span>
               <h2 className="text-2xl font-bold tracking-tight md:text-3xl">{s.title}</h2>
@@ -84,11 +79,16 @@ export default async function ServicesPage() {
       {/* Process */}
       <Section>
         <SectionTitle kicker="Process" title="How we work" />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((st, i) => (
-            <div key={i} className="rounded-lg border border-line bg-surface p-5">
-              <div className="text-xs font-bold text-accent">STEP {i + 1}</div>
-              <h3 className="mt-2 font-semibold">{st.title}</h3>
+            <div
+              key={i}
+              className="rounded border border-line bg-surface p-5 transition-all hover:-translate-y-1 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/5"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-accent to-violet-500 text-sm font-bold text-white shadow-md shadow-accent/30">
+                {i + 1}
+              </span>
+              <h3 className="mt-3 font-display font-semibold">{st.title}</h3>
               <p className="mt-2 text-sm text-muted">{st.body}</p>
             </div>
           ))}
@@ -101,7 +101,7 @@ export default async function ServicesPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(capabilities.data ?? []).map((c) => (
             <div key={c.id} className="flex gap-3">
-              <span className="inline-flex h-fit rounded-xl bg-ink p-2.5 text-bg">
+              <span className="inline-flex h-fit rounded bg-gradient-to-br from-accent to-violet-500 p-2.5 text-white shadow-md shadow-accent/30">
                 <IconByName name={c.icon} size={18} />
               </span>
               <div>

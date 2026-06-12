@@ -90,10 +90,10 @@ export function Sidebar({
                       <Link
                         href={item.href}
                         className={cn(
-                          "flex items-center gap-2.5 rounded px-2 py-1.5 text-sm transition-colors",
+                          "relative flex items-center gap-2.5 rounded px-2.5 py-1.5 text-sm transition-all",
                           active
-                            ? "bg-accent/15 font-medium text-accent"
-                            : "text-muted hover:bg-surface-2 hover:text-ink",
+                            ? "bg-accent/10 font-medium text-accent before:absolute before:left-0 before:top-1/2 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-accent before:content-['']"
+                            : "text-muted hover:translate-x-0.5 hover:bg-surface-2 hover:text-ink",
                         )}
                       >
                         <Icon size={16} />
