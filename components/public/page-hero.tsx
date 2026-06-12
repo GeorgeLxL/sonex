@@ -8,18 +8,26 @@ export function PageHero({
   title,
   sub,
   big,
+  bg,
   children,
 }: {
   title: ReactNode;
   sub?: string;
   big?: boolean;
+  bg?: string;
   children?: ReactNode;
 }) {
+
+  const pageBg = bg || "home";
+
   return (
     <section className="relative overflow-hidden">
       <div
         aria-hidden
-        className="absolute inset-0 bg-[url('/hero-bg.svg')] bg-cover bg-center opacity-70 dark:opacity-25"
+        className={`absolute inset-0 bg-cover bg-center opacity-70 dark:opacity-40`}
+        style={{
+          backgroundImage: `url('/back/back-${pageBg}.png')`,
+        }}
       />
       {/* Scrim: fades the dots behind the text so copy stays readable. */}
       <div

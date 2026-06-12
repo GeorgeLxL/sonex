@@ -44,7 +44,7 @@ export default async function WorkPage({
 
   return (
     <>
-      <PageHero title="Our work" sub="Products we designed, built and shipped." />
+      <PageHero title="Our work" sub="Products we designed, built and shipped." bg='work' />
 
       <Section>
         <div className="mb-8 flex flex-wrap gap-2">

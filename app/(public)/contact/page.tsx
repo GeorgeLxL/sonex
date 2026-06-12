@@ -19,6 +19,7 @@ export default async function ContactPage() {
       <PageHero
         title="Contact"
         sub="Tell us what you are building. We reply within one business day."
+        bg='contact'
       />
 
       <Section>

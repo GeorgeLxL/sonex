@@ -28,6 +28,7 @@ export default async function ServicesPage() {
       <PageHero
         title="Services"
         sub="Six disciplines, one senior team. Every engagement ships production software."
+        bg='services'
       />
 
       <Section>

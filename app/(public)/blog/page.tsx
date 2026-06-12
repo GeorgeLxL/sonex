@@ -17,7 +17,7 @@ export default async function BlogPage() {
 
   return (
     <>
-    <PageHero title="Blog" sub="Engineering notes, product thinking and stories from the team." />
+    <PageHero title="Blog" sub="Engineering notes, product thinking and stories from the team." bg='blog' />
     <Section>
       {(posts ?? []).length === 0 && (
         <p className="text-sm text-muted">No posts yet — check back soon.</p>

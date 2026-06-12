@@ -18,7 +18,7 @@ export default async function CareersPage() {
 
   return (
     <>
-      <PageHero title="Careers" sub={text(content, "careers.why", "body")} />
+      <PageHero title="Careers" sub={text(content, "careers.why", "body")} bg='careers' />
 
       <Section tint>
         <SectionTitle kicker="Benefits" title="What you get" />
