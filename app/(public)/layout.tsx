@@ -38,42 +38,45 @@ export default async function PublicLayout({ children }: { children: React.React
   })).filter((s) => s.url.startsWith("http"));
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="lux flex min-h-screen flex-col bg-bg text-ink">
       <RevealInit />
-      <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+      <header className="sticky top-0 z-40 border-b border-accent/15 bg-bg/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-4">
           <Link href="/" aria-label={siteName} className="flex items-center">
             <Logo className="h-9" />
           </Link>
-          <nav className="hidden items-center gap-6 text-sm md:flex">
-            <NavLinks items={NAV} />
+          <nav className="hidden items-center gap-8 md:flex">
+            <NavLinks items={NAV} className="text-[0.8125rem] uppercase tracking-[0.06em]" />
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link
               href="/contact"
-              className="hidden rounded bg-accent px-3 py-2 text-sm font-medium text-accent-ink hover:opacity-90 sm:block"
+              className="hidden bg-accent px-5 py-2.5 text-xs font-medium uppercase tracking-[0.08em] text-accent-ink transition-colors hover:bg-accent/85 sm:block"
             >
               Start a project
             </Link>
           </div>
         </div>
-        <nav className="flex items-center gap-4 overflow-x-auto border-t border-line px-4 py-2 text-sm md:hidden">
-          <NavLinks items={NAV} className="whitespace-nowrap" />
+        <nav className="flex items-center gap-5 overflow-x-auto border-t border-accent/15 px-4 py-2.5 md:hidden">
+          <NavLinks
+            items={NAV}
+            className="whitespace-nowrap text-xs uppercase tracking-[0.06em]"
+          />
         </nav>
       </header>
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t border-line bg-surface">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 md:grid-cols-12">
+      <footer className="border-t border-accent/15 bg-surface">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 md:grid-cols-12">
           <div className="md:col-span-6">
             <Logo className="h-8" />
-            <p className="mt-3 max-w-sm text-sm text-muted">
+            <p className="mt-4 max-w-sm text-sm font-light leading-relaxed text-muted">
               {text(content, "site.tagline", "text")}
             </p>
             {socials.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-5 flex flex-wrap gap-2">
                 {socials.map(({ key, label, Icon, url }) => (
                   <a
                     key={key}
@@ -81,16 +84,16 @@ export default async function PublicLayout({ children }: { children: React.React
                     target="_blank"
                     rel="noreferrer"
                     aria-label={label}
-                    className="rounded border border-accent/40 p-2.5 text-accent transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                    className="border border-accent/30 p-2.5 text-accent transition-colors hover:border-accent hover:bg-accent hover:text-accent-ink"
                   >
-                    <Icon size={22} />
+                    <Icon size={20} />
                   </a>
                 ))}
               </div>
             )}
           </div>
           <div className="md:col-span-2">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Company</div>
+            <div className="mb-4 font-mono text-[0.65rem] font-medium uppercase tracking-[0.2em] text-accent">Company</div>
             <ul className="space-y-2 text-sm">
               <li><Link href="/about" className="text-muted hover:text-ink">About</Link></li>
               <li><Link href="/services" className="text-muted hover:text-ink">Services</Link></li>
@@ -101,7 +104,7 @@ export default async function PublicLayout({ children }: { children: React.React
             </ul>
           </div>
           <div className="md:col-span-4">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Contact</div>
+            <div className="mb-4 font-mono text-[0.65rem] font-medium uppercase tracking-[0.2em] text-accent">Contact</div>
             <ul className="space-y-3 text-sm text-muted">
               {email && (
                 <li className="flex items-center gap-2.5">
@@ -128,12 +131,12 @@ export default async function PublicLayout({ children }: { children: React.React
             </ul>
           </div>
         </div>
-        <div className="border-t border-line">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-4 text-xs text-muted">
+        <div className="border-t border-accent/10">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-5 font-mono text-[0.65rem] tracking-[0.1em] text-muted">
             <span>© {new Date().getFullYear()} {siteName}. All rights reserved.</span>
-            <span className="flex gap-4">
-              <Link href="/privacy" className="hover:text-ink">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-ink">Terms of Service</Link>
+            <span className="flex gap-4 uppercase">
+              <Link href="/privacy" className="hover:text-accent">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-accent">Terms of Service</Link>
             </span>
           </div>
         </div>

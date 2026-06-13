@@ -34,9 +34,9 @@ export default async function ContactPage() {
           </div>
           <aside className="space-y-4">
             {(email || phone || address) && (
-              <div className="rounded border border-line bg-surface p-5">
-                <h2 className="text-sm font-semibold">Contact info</h2>
-                <ul className="mt-3 space-y-3 text-sm text-muted">
+              <div className="border border-accent/20 bg-surface p-6">
+                <h2 className="font-mono text-[0.68rem] uppercase tracking-[0.25em] text-accent">Contact info</h2>
+                <ul className="mt-4 space-y-3 text-sm font-light text-muted">
                   {email && (
                     <li className="flex items-center gap-2">
                       <Mail size={15} className="text-accent" />
@@ -62,6 +62,16 @@ export default async function ContactPage() {
                 </ul>
               </div>
             )}
+            <div className="border border-accent/15 bg-accent/[.03] p-6">
+              <p className="font-display text-sm italic leading-relaxed text-muted">
+                {text(
+                  content,
+                  "contact.info",
+                  "note",
+                  "We respond to every enquiry within one business day. If your project is a good fit, we'll schedule a 30-minute call to understand the details — no pitch, no fluff.",
+                )}
+              </p>
+            </div>
           </aside>
         </div>
       </Section>

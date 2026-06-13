@@ -31,6 +31,80 @@
   --danger: 248 113 113;
 }
 
+/* ---------------------------------------------------------------- */
+/* Luxury public theme (.lux) — scoped to the public site wrapper so */
+/* the ERP keeps the default tokens above. Dark = Figma design;      */
+/* light = adapted ivory + gold variant.                             */
+/* ---------------------------------------------------------------- */
+.lux {
+  --bg: 248 250 252; /* cool near-white */
+  --surface: 255 255 255;
+  --surface-2: 240 245 250;
+  --line: 214 224 238; /* cool hairline */
+  --ink: 15 23 35;
+  --muted: 90 104 126;
+  --accent: 29 78 216; /* brand blue, readable on white (#1D4ED8) */
+  --accent-ink: 255 255 255;
+  --radius-card: 0px; /* sharp corners everywhere */
+  --lux-gradient: linear-gradient(135deg, #1d4ed8 0%, #2e7cf6 60%, #1d4ed8 100%);
+}
+.dark .lux {
+  --bg: 8 8 8;
+  --surface: 10 10 10;
+  --surface-2: 15 15 15;
+  --line: 26 34 52; /* ≈ brand blue at low alpha on black */
+  --ink: 255 255 255;
+  --muted: 150 156 168;
+  --accent: 56 134 248; /* luminous brand blue (#3886F8) */
+  --accent-ink: 255 255 255;
+  --lux-gradient: linear-gradient(135deg, #3882f6 0%, #38bdf8 50%, #3882f6 100%);
+}
+
+/* Serif display + flat headings inside the luxury theme. */
+.lux {
+  --font-sora: var(--font-playfair);
+}
+.lux .title-shadow,
+.dark .lux .title-shadow {
+  text-shadow: none;
+}
+
+/* Gold-gradient italic serif accent (em words in headings). */
+.lux-gradient-text {
+  background-image: var(--lux-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+}
+
+/* Luxury form controls (public site only): translucent fill, accent
+   hairline border + focus, sharp corners. Scoped to .lux so the ERP
+   forms keep their default styling. Checkboxes are excluded. */
+.lux input:not([type="checkbox"]),
+.lux textarea,
+.lux select {
+  background: rgb(255 255 255 / 0.03);
+  border-color: rgb(var(--accent) / 0.2);
+}
+.lux input:not([type="checkbox"]),
+.lux textarea {
+  padding: 0.875rem 1rem;
+}
+.lux input:not([type="checkbox"]):focus,
+.lux textarea:focus,
+.lux select:focus {
+  border-color: rgb(var(--accent) / 0.55);
+}
+
+/* Faint structural grid lines (hero backdrops). */
+.lux-grid-bg {
+  background-image:
+    linear-gradient(rgb(var(--accent) / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--accent) / 0.05) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
 html {
   scroll-behavior: smooth;
   color-scheme: light;

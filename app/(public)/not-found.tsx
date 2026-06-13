@@ -5,21 +5,19 @@ import { ArrowRight } from "lucide-react";
  *  inside the public layout, so the header and footer stay visible. */
 export default function NotFound() {
   return (
-    <section className="mx-auto flex max-w-6xl flex-col items-center px-4 py-24 text-center md:py-32">
-      <div className="bg-gradient-to-r from-accent to-violet-500 bg-clip-text font-display text-7xl font-bold text-transparent md:text-8xl">
-        404
-      </div>
-      <h1 className="mt-4 font-display text-2xl font-bold tracking-tight md:text-3xl">
+    <section className="mx-auto flex max-w-6xl flex-col items-center px-4 py-28 text-center md:py-36">
+      <div className="font-display text-7xl font-medium text-accent md:text-8xl">404</div>
+      <h1 className="mt-4 font-display text-2xl font-medium tracking-tight md:text-3xl">
         Page not found
       </h1>
-      <p className="mt-3 max-w-md text-sm text-muted">
+      <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-muted">
         The page you are looking for does not exist or is no longer published.
       </p>
       <Link
         href="/"
-        className="mt-8 inline-flex items-center gap-2 rounded bg-accent px-6 py-3 text-sm font-semibold text-accent-ink shadow-lg shadow-accent/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/40"
+        className="mt-10 inline-flex items-center gap-2 bg-accent px-8 py-3.5 text-sm font-medium uppercase tracking-[0.06em] text-accent-ink transition-colors hover:bg-accent/85"
       >
-        Back to home <ArrowRight size={15} />
+        Back to home <ArrowRight size={14} />
       </Link>
     </section>
   );

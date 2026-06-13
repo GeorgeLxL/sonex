@@ -20,47 +20,37 @@ function TestimonialCard({ t, hl }: { t: TestimonialData; hl: boolean }) {
     <figure
       // Identical padding in both states — only transform/opacity/colors may
       // differ, so the slider's height stays constant while swiping.
-      className={`relative flex h-full flex-col overflow-hidden rounded border bg-surface p-6 transition-all duration-500 md:p-8 ${
+      className={`relative flex h-full flex-col overflow-hidden border bg-surface p-6 transition-all duration-500 md:p-8 ${
         hl
-          ? "scale-100 border-[#6366f1] text-white shadow-xl shadow-accent/25 dark:border-[#372f9e]"
-          : "scale-90 border-line/60 opacity-70 shadow-md shadow-black/5"
+          ? "scale-100 border-accent/50"
+          : "scale-90 border-accent/15 opacity-60"
       }`}
     >
-      {/* background-image can't animate, so the gradient lives on its own
-          layer and cross-fades over the flat bg-surface */}
       <span
         aria-hidden
-        className={`pointer-events-none absolute inset-0 bg-gradient-to-br from-[#6366f1] to-[#8b5cf6] transition-opacity duration-500 dark:from-[#372f9e] dark:to-[#4c1d95] ${hl ? "opacity-100" : "opacity-0"}`}
+        className={`pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_0%,rgb(var(--accent)/0.07)_0%,transparent_70%)] transition-opacity duration-500 ${hl ? "opacity-100" : "opacity-0"}`}
       />
       <span
         aria-hidden
-        className={`absolute right-5 top-2 font-display text-6xl leading-none transition-colors duration-500 ${hl ? "text-white/15" : "text-accent/10"}`}
+        className="absolute right-5 top-2 font-display text-6xl italic leading-none text-accent/15"
       >
         &rdquo;
       </span>
-      <div className={`relative flex gap-0.5 transition-colors duration-500 ${hl ? "text-amber-300" : "text-warning"}`}>
+      <div className="relative flex gap-0.5 text-accent">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} size={14} fill="currentColor" strokeWidth={0} />
+          <Star key={i} size={13} fill="currentColor" strokeWidth={0} />
         ))}
       </div>
-      <blockquote
-        className={`relative mb-5 mt-3 text-sm leading-relaxed transition-colors duration-500 ${hl ? "text-white/90" : "text-ink/90"}`}
-      >
+      <blockquote className="relative mb-5 mt-4 font-display text-base italic leading-relaxed text-ink/85">
         &ldquo;{t.quote}&rdquo;
       </blockquote>
-      <figcaption
-        className={`relative mt-auto flex items-center gap-3 border-t pt-4 transition-colors duration-500 ${hl ? "border-white/20" : "border-line"}`}
-      >
-        <span
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors duration-500 ${hl ? "bg-white text-[#6366f1]" : "bg-accent text-white"}`}
-        >
+      <figcaption className="relative mt-auto flex items-center gap-3 border-t border-accent/15 pt-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-accent/40 font-mono text-xs text-accent">
           {t.author.split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
         </span>
-        <span className="text-sm font-semibold">
+        <span className="text-sm font-medium">
           {t.author}
-          <span
-            className={`block text-xs font-normal transition-colors duration-500 ${hl ? "text-white/70" : "text-muted"}`}
-          >
+          <span className="mt-0.5 block font-mono text-[0.68rem] uppercase tracking-[0.12em] text-accent">
             {t.company}
           </span>
         </span>
@@ -103,7 +93,7 @@ export function TestimonialSlider({ items }: { items: TestimonialData[] }) {
   };
 
   const arrow =
-    "flex h-10 w-10 items-center justify-center rounded-full border border-accent/40 bg-surface text-accent shadow-md transition-colors hover:bg-accent hover:text-white";
+    "flex h-10 w-10 items-center justify-center border border-accent/25 bg-transparent text-muted transition-colors hover:border-accent/60 hover:text-accent";
 
   return (
     <div>
@@ -146,7 +136,7 @@ export function TestimonialSlider({ items }: { items: TestimonialData[] }) {
               key={t.id}
               type="button"
               aria-label={`Go to testimonial ${i + 1}`}
-              className={`h-2 rounded-full transition-all ${i === active ? "w-6 bg-accent" : "w-2 bg-line hover:bg-accent/40"}`}
+              className={`h-1.5 transition-all ${i === active ? "w-6 bg-accent" : "w-1.5 bg-accent/20 hover:bg-accent/40"}`}
               onClick={() => goTo(i)}
             />
           ))}

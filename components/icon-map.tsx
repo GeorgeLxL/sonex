@@ -43,12 +43,14 @@ export const ICON_NAMES = Object.keys(ICON_MAP);
 export function IconByName({
   name,
   size = 20,
+  strokeWidth,
   className,
 }: {
   name: string | null | undefined;
   size?: number;
+  strokeWidth?: number;
   className?: string;
 }) {
   const Icon = ICON_MAP[name ?? ""] ?? Code;
-  return <Icon size={size} className={className} />;
+  return <Icon size={size} strokeWidth={strokeWidth} className={className} />;
 }

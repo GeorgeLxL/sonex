@@ -22,10 +22,10 @@ export function NavLinks({
             key={item.href}
             href={item.href}
             className={cn(
-              "border-b-2 pb-0.5 transition-colors",
+              "border-b pb-0.5 transition-colors",
               active
-                ? "border-ink font-medium text-ink"
-                : "border-transparent text-muted hover:text-ink",
+                ? "border-accent font-medium text-ink"
+                : "border-transparent text-muted hover:text-accent",
               className,
             )}
           >

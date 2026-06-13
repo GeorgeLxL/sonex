@@ -50,10 +50,10 @@ export default async function WorkPage({
       <PageHero title="Our work" sub="Products we designed, built and shipped." bg='work' />
 
       <Section>
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="mb-10 flex flex-wrap gap-2">
           <Link
             href="/work"
-            className={`rounded-full border px-4 py-1.5 text-sm ${!service ? "border-accent bg-accent text-accent-ink" : "border-line text-muted hover:text-ink"}`}
+            className={`border px-4 py-2 font-mono text-[0.7rem] uppercase tracking-[0.1em] transition-colors ${!service ? "border-accent bg-accent text-accent-ink" : "border-accent/25 text-muted hover:border-accent/60 hover:text-accent"}`}
           >
             All
           </Link>
@@ -61,20 +61,21 @@ export default async function WorkPage({
             <Link
               key={slug}
               href={`/work?service=${encodeURIComponent(slug)}`}
-              className={`rounded-full border px-4 py-1.5 text-sm ${service === slug ? "border-accent bg-accent text-accent-ink" : "border-line text-muted hover:text-ink"}`}
+              className={`border px-4 py-2 font-mono text-[0.7rem] uppercase tracking-[0.1em] transition-colors ${service === slug ? "border-accent bg-accent text-accent-ink" : "border-accent/25 text-muted hover:border-accent/60 hover:text-accent"}`}
             >
               {title}
             </Link>
           ))}
         </div>
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((w) => (
-            <WorkCard key={w.id} work={w as WorkCardData} />
-          ))}
-        </div>
-        {filtered.length === 0 && (
-          <p className="text-sm text-muted">No case studies for this service yet.</p>
+        {filtered.length > 0 ? (
+          <div className="grid gap-px border border-accent/15 bg-accent/15">
+            {filtered.map((w) => (
+              <WorkCard key={w.id} work={w as WorkCardData} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm font-light text-muted">No case studies for this service yet.</p>
         )}
       </Section>
 

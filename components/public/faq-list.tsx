@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Plus, Minus } from "lucide-react";
 
+/** Luxury accordion: hairline dividers, serif questions, gold +/− boxes. */
 export function FaqList({ faqs }: { faqs: { id: string; question: string; answer: string }[] }) {
   const [active, setActive] = useState<number>(-1);
 
@@ -19,22 +21,28 @@ export function FaqList({ faqs }: { faqs: { id: string; question: string; answer
 
   if (!faqs.length) return null;
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl border-t border-accent/15">
       {faqs.map((f, idx) => (
-        <div
-          key={f.id}
-          className="group px-5 py-4 cursor-pointer overflow-hidden shadow-md rounded mb-5 transition-all bg-surface hover:bg-line dark:bg-accent/10 dark:hover:bg-accent/20"
-          onClick={() => handleClick(idx)}
-        >
-          <div className="flex list-none">
-            <span className="text-lg mr-2 font-black text-accent/90">Q.</span>
-            <span className="pt-[.1em] font-bold">{f.question}</span>
-          </div>
-          <div className="group-answer transition-height duration-300 ease-in-out overflow-hidden" style={{height: 0}}>
-            <div className="flex text-sm pt-3">
-              <span className="text-lg mr-2 font-black text-accent/90">A.</span>
-              <span className="pt-[.2em]">{f.answer}</span>
-            </div>
+        <div key={f.id} className="border-b border-accent/15">
+          <button
+            type="button"
+            onClick={() => handleClick(idx)}
+            className="flex w-full items-center justify-between gap-6 py-6 text-left"
+          >
+            <span
+              className={`font-display text-lg transition-colors ${active === idx ? "text-ink" : "text-ink/75"}`}
+            >
+              {f.question}
+            </span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-accent/30 text-accent">
+              {active === idx ? <Minus size={14} /> : <Plus size={14} />}
+            </span>
+          </button>
+          <div
+            className="group-answer overflow-hidden transition-[height] duration-300 ease-in-out"
+            style={{ height: 0 }}
+          >
+            <p className="pb-7 pr-12 text-sm font-light leading-relaxed text-muted">{f.answer}</p>
           </div>
         </div>
       ))}

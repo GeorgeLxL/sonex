@@ -16,18 +16,18 @@ export function LegalPage({
   return (
     <Section>
       <div className="mx-auto max-w-3xl py-6">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
+        <h1 className="font-display text-3xl font-medium tracking-tight md:text-4xl">{title}</h1>
         {updated && (
-          <p className="mt-2 text-sm text-muted">Last updated {formatDateHuman(updated)}</p>
+          <p className="mt-3 font-mono text-[0.7rem] uppercase tracking-[0.15em] text-accent">Last updated {formatDateHuman(updated)}</p>
         )}
         <div className="mt-8 space-y-4">
           {blocks.map((block, i) =>
             block.startsWith("## ") ? (
-              <h2 key={i} className="pt-4 text-lg font-semibold">
+              <h2 key={i} className="pt-4 font-display text-lg font-medium">
                 {block.slice(3)}
               </h2>
             ) : (
-              <p key={i} className="leading-relaxed text-muted">
+              <p key={i} className="font-light leading-relaxed text-muted">
                 {block}
               </p>
             ),

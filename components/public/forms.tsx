@@ -1,11 +1,27 @@
 "use client";
 
 import { useActionState } from "react";
+import { ArrowRight } from "lucide-react";
 import { submitInquiry, submitApplication, type PublicFormState } from "@/server/actions/public";
-import { Button, Input, Textarea, Label, Select } from "@/components/ui";
+import { Input, Textarea, Select } from "@/components/ui";
 import { getRecaptchaToken } from "@/lib/recaptcha";
 
 const initial: PublicFormState = { ok: false };
+
+/** Mono uppercase accent label, matching the design's form labels. */
+const lbl = "mb-2 block font-mono text-[0.62rem] uppercase tracking-[0.2em] text-accent";
+/** Solid accent submit button. */
+const submitBtn =
+  "inline-flex items-center justify-center gap-2 bg-accent px-8 py-3.5 text-sm font-medium uppercase tracking-[0.06em] text-accent-ink transition-colors hover:bg-accent/85 disabled:cursor-not-allowed disabled:opacity-50";
+
+function FormSuccess({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="border border-accent/30 bg-accent/[.04] p-8">
+      <p className="font-display text-xl font-medium">{title}</p>
+      <p className="mt-2 text-sm font-light leading-relaxed text-muted">{body}</p>
+    </div>
+  );
+}
 
 export function ContactForm() {
   const [state, action, pending] = useActionState(
@@ -19,42 +35,42 @@ export function ContactForm() {
 
   if (state.ok) {
     return (
-      <div className="rounded border border-success/40 bg-success/10 p-6 text-sm">
-        <p className="font-semibold text-success">Message sent.</p>
-        <p className="mt-1 text-muted">We will get back to you within one business day.</p>
-      </div>
+      <FormSuccess
+        title="Thank you."
+        body="We've received your message and will be in touch within one business day."
+      />
     );
   }
 
   return (
-    <form action={action} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <form action={action} className="space-y-6">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <Label htmlFor="contact-name">Name *</Label>
-          <Input id="contact-name" name="name" required maxLength={200} placeholder="Jane Smith" />
+          <label htmlFor="contact-name" className={lbl}>Name *</label>
+          <Input id="contact-name" name="name" required maxLength={200} placeholder="Your name" />
         </div>
         <div>
-          <Label htmlFor="contact-email">Email *</Label>
-          <Input id="contact-email" name="email" type="email" required placeholder="jane@company.com" />
+          <label htmlFor="contact-email" className={lbl}>Email *</label>
+          <Input id="contact-email" name="email" type="email" required placeholder="your@email.com" />
         </div>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <Label htmlFor="contact-company">Company</Label>
-          <Input id="contact-company" name="company" maxLength={200} placeholder="Acme Inc." />
+          <label htmlFor="contact-company" className={lbl}>Company</label>
+          <Input id="contact-company" name="company" maxLength={200} placeholder="Your company name" />
         </div>
         <div>
-          <Label htmlFor="contact-phone">Phone number</Label>
+          <label htmlFor="contact-phone" className={lbl}>Phone number</label>
           <Input id="contact-phone" name="phone" type="tel" maxLength={50} placeholder="+1 (555) 000-0000" />
         </div>
       </div>
       <div>
-        <Label htmlFor="contact-message">What are you building? *</Label>
-        <Textarea id="contact-message" name="message" required rows={5} maxLength={5000} placeholder="A few sentences about your project, timeline and goals." />
+        <label htmlFor="contact-message" className={lbl}>Tell us about your project *</label>
+        <Textarea id="contact-message" name="message" required rows={5} maxLength={5000} placeholder="What are you building? What's the timeline and goals?" />
       </div>
       {/* Honeypot */}
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-      <label className="flex items-start gap-2.5 text-sm text-muted">
+      <label className="flex items-start gap-2.5 text-sm font-light text-muted">
         <input type="checkbox" name="agree" required className="mt-0.5" />
         <span>
           By clicking the &ldquo;Send message&rdquo; button, you agree to our{" "}
@@ -69,9 +85,9 @@ export function ContactForm() {
         </span>
       </label>
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
-      <Button type="submit" disabled={pending}>
-        {pending ? "Sending…" : "Send message"}
-      </Button>
+      <button type="submit" disabled={pending} className={submitBtn}>
+        {pending ? "Sending…" : "Send message"} <ArrowRight size={14} />
+      </button>
     </form>
   );
 }
@@ -88,17 +104,17 @@ export function ApplicationForm({ jobs }: { jobs: { id: string; title: string }[
 
   if (state.ok) {
     return (
-      <div className="rounded border border-success/40 bg-success/10 p-6 text-sm">
-        <p className="font-semibold text-success">Application received.</p>
-        <p className="mt-1 text-muted">Thanks for applying — we review every application and reply within a week.</p>
-      </div>
+      <FormSuccess
+        title="Application received."
+        body="Thanks for applying — we review every application and reply within a week."
+      />
     );
   }
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-6">
       <div>
-        <Label htmlFor="apply-position">Position *</Label>
+        <label htmlFor="apply-position" className={lbl}>Position *</label>
         <Select id="apply-position" name="job_post_id" required defaultValue={jobs[0]?.id}>
           {jobs.map((j) => (
             <option key={j.id} value={j.id}>
@@ -107,35 +123,35 @@ export function ApplicationForm({ jobs }: { jobs: { id: string; title: string }[
           ))}
         </Select>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <Label htmlFor="apply-name">Name *</Label>
+          <label htmlFor="apply-name" className={lbl}>Name *</label>
           <Input id="apply-name" name="name" required maxLength={200} />
         </div>
         <div>
-          <Label htmlFor="apply-email">Email *</Label>
+          <label htmlFor="apply-email" className={lbl}>Email *</label>
           <Input id="apply-email" name="email" type="email" required />
         </div>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <Label htmlFor="apply-phone">Phone</Label>
+          <label htmlFor="apply-phone" className={lbl}>Phone</label>
           <Input id="apply-phone" name="phone" maxLength={50} />
         </div>
         <div>
-          <Label htmlFor="apply-resume">Resume / portfolio URL</Label>
+          <label htmlFor="apply-resume" className={lbl}>Resume / portfolio URL</label>
           <Input id="apply-resume" name="resume_url" type="url" placeholder="https://…" />
         </div>
       </div>
       <div>
-        <Label htmlFor="apply-cover">Cover letter</Label>
+        <label htmlFor="apply-cover" className={lbl}>Cover letter</label>
         <Textarea id="apply-cover" name="cover_letter" rows={5} maxLength={5000} placeholder="Why this role, why you." />
       </div>
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
-      <Button type="submit" disabled={pending}>
-        {pending ? "Submitting…" : "Submit application"}
-      </Button>
+      <button type="submit" disabled={pending} className={submitBtn}>
+        {pending ? "Submitting…" : "Submit application"} <ArrowRight size={14} />
+      </button>
     </form>
   );
 }

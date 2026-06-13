@@ -11,16 +11,6 @@ const SERVICE_IMAGES: Record<string, string> = {
   "cloud-devops": "/service/service-devops.jpg",
 };
 
-/** Per-card gradient hues so grids don't look uniform. */
-const ICON_HUES = [
-  "from-accent to-violet-500 shadow-accent/30",
-  "from-sky-500 to-cyan-500 shadow-sky-500/30",
-  "from-emerald-500 to-teal-500 shadow-emerald-500/30",
-  "from-amber-500 to-orange-500 shadow-amber-500/30",
-  "from-pink-500 to-rose-500 shadow-pink-500/30",
-  "from-indigo-500 to-blue-500 shadow-indigo-500/30",
-];
-
 export interface ServiceCardData {
   slug: string;
   title: string;
@@ -40,10 +30,10 @@ export function splitFeatured<T extends { slug: string }>(all: T[]): { featured:
   return { featured, rest };
 }
 
-/** Service card with the artwork as a full background image, dashed offset
- *  frame behind. Renders as an anchor when `href` is given.
- *  `variant`: "featured" = large hero card with summary + badge,
- *  "compact" = icon + title only, no dashed frame; default = classic card. */
+/** Luxury service card: artwork behind a dark scrim, hairline icon box,
+ *  serif title. Renders as an anchor when `href` is given.
+ *  `variant`: "featured" = the large bento cell with badge; "compact" = 1×1
+ *  bento cell; default = classic card (detail grids). */
 export function ServiceCard({
   service: s,
   index,
@@ -70,12 +60,12 @@ export function ServiceCard({
           alt=""
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
       {featured && (
-        <span className="absolute right-3 top-3 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-ink shadow-md shadow-accent/30">
+        <span className="absolute right-4 top-4 bg-accent px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.15em] text-accent-ink">
           Featured
         </span>
       )}
@@ -90,29 +80,25 @@ export function ServiceCard({
               : "min-h-[200px]"
         }`}
       >
-        <span
-          className={`inline-flex w-fit rounded bg-gradient-to-br p-2.5 text-white shadow-md ${ICON_HUES[index % ICON_HUES.length]}`}
-        >
-          <IconByName name={s.icon} size={featured ? 24 : 20} />
+        <span className="inline-flex h-11 w-11 items-center justify-center border border-accent/40 bg-black/30 text-accent">
+          <IconByName name={s.icon} size={featured ? 20 : 18} />
         </span>
         <h3
-          className={`mt-auto pt-6 font-semibold text-white ${
-            featured ? "font-display text-xl md:text-2xl" : compact ? "font-display text-xl" : ""
+          className={`mt-auto pt-6 font-display font-medium text-white ${
+            featured ? "text-xl md:text-2xl" : compact ? "text-xl" : "text-lg"
           }`}
         >
           {s.title}
         </h3>
-        <p className="mt-2 text-sm text-white/80">{s.summary}</p>
+        <p className="mt-2 text-sm font-light leading-relaxed text-white/70">{s.summary}</p>
       </div>
     </>
   );
 
-  const cardClass =
-    "group relative block h-full overflow-hidden rounded border border-accent/80 shadow-md shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/10";
+  const cardClass = "group relative block h-full overflow-hidden transition-colors";
 
   return (
     <div className={`relative ${className ?? ""}`}>
-      <div className="absolute inset-0 translate-x-3 translate-y-3 border-2 rounded border-dashed border-accent/80" />
       {href ? (
         <a href={href} className={cardClass}>
           {inner}

@@ -1,31 +1,31 @@
 import Link from "next/link";
-import { ArrowRight, DivideIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
 
-/** Centered "View …" button at the bottom of a section. */
+/** Centered "View …" link at the bottom of a section — gold hairline-underlined. */
 export function SectionButton({ href, label }: { href: string; label: string }) {
   return (
-    <div className="mt-10 flex justify-center">
+    <div className="mt-12 flex justify-center">
       <Link
         href={href}
-        className="inline-flex items-center gap-2 rounded bg-accent px-6 py-3 text-sm font-semibold text-accent-ink shadow-lg shadow-accent/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/40"
+        className="inline-flex items-center gap-2 border-b border-accent/30 pb-1 text-xs uppercase tracking-[0.1em] text-accent transition-colors hover:border-accent"
       >
-        {label} <ArrowRight size={15} />
+        {label} <ArrowRight size={13} />
       </Link>
     </div>
   );
 }
 
-/** Renders "*word*" markers as accent-colored spans. */
+/** Renders "*word*" markers as italic serif gold-gradient accents. */
 export function AccentText({ text, className }: { text: string; className?: string }) {
   const parts = text.split(/(\*[^*]+\*)/g);
   return (
     <span className={className}>
       {parts.map((part, i) =>
         part.startsWith("*") && part.endsWith("*") ? (
-          <span key={i} className="text-accent">
+          <em key={i} className="lux-gradient-text">
             {part.slice(1, -1)}
-          </span>
+          </em>
         ) : (
           <span key={i}>{part}</span>
         ),
@@ -44,52 +44,76 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className={tint ? "bg-surface" : ""}>
-      <div data-reveal className="mx-auto max-w-6xl px-4 py-16 md:py-20">
+    <section id={id} className={`border-t border-accent/10 ${tint ? "bg-surface" : "bg-bg"}`}>
+      <div data-reveal className="mx-auto max-w-6xl px-4 py-20 md:py-28">
         {children}
       </div>
     </section>
   );
 }
 
-export function SectionTitle({ kicker, title, sub }: { kicker?: string; title: string; sub?: string }) {
+export function SectionTitle({
+  kicker,
+  title,
+  sub,
+  action,
+}: {
+  kicker?: string;
+  title: string;
+  sub?: string;
+  /** Optional top-right link (design's "View All →" treatment). */
+  action?: { href: string; label: string };
+}) {
   return (
-    <div className="mb-10 max-w-2xl">
-      {kicker && (
-        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent">
-          <span aria-hidden className="h-px w-8 bg-gradient-to-r from-accent to-transparent" />
-          {kicker}
-        </div>
+    <div className={`mb-12 flex flex-wrap items-end justify-between gap-4 ${action ? "" : ""}`}>
+      <div className="max-w-2xl">
+        {kicker && (
+          <div className="mb-5 flex items-center gap-3 font-mono text-[0.68rem] uppercase tracking-[0.25em] text-accent">
+            <span aria-hidden className="h-px w-6 bg-accent" />
+            {kicker}
+          </div>
+        )}
+        <h2 className="font-display text-3xl font-medium tracking-tight md:text-4xl">{title}</h2>
+        {sub && <p className="mt-4 font-light leading-relaxed text-muted">{sub}</p>}
+      </div>
+      {action && (
+        <Link
+          href={action.href}
+          className="inline-flex items-center gap-1.5 whitespace-nowrap border-b border-accent/30 pb-1 font-mono text-[0.7rem] uppercase tracking-[0.1em] text-accent transition-colors hover:border-accent"
+        >
+          {action.label} <ArrowRight size={12} />
+        </Link>
       )}
-      <h2 className="title-shadow font-display text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
-      {sub && <p className="mt-3 text-muted">{sub}</p>}
     </div>
   );
 }
 
 export function CtaBand({ title, body, button }: { title: string; body: string; button: string }) {
-  // Indigo-violet gradient; deeper in dark mode.
+  // Luxury bordered panel: hairline gold frame, faint radial glow, centered.
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-[#6366f1] via-[#7c5cf0] to-[#8b5cf6] dark:from-[#312e81] dark:via-[#3b2f8f] dark:to-[#4c1d95]">
-      <div
-        aria-hidden
-        className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute -bottom-28 left-1/4 h-64 w-64 rounded-full bg-white/5 blur-3xl"
-      />
-      <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-14">
-        <div>
-          <h2 className="font-display text-xl font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.3)] md:text-2xl">{title}</h2>
-          <p className="mt-1 max-w-xl text-sm text-white/80">{body}</p>
+    <section className="border-t border-accent/10 bg-bg px-4 py-16">
+      <div className="mx-auto max-w-6xl">
+        <div className="relative overflow-hidden border border-accent/20 px-6 py-16 text-center md:px-16 md:py-20">
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgb(var(--accent)/0.07)_0%,transparent_70%)]"
+          />
+          <div className="relative">
+            <div className="mb-6 flex items-center justify-center gap-3 font-mono text-[0.68rem] uppercase tracking-[0.25em] text-accent">
+              <span aria-hidden className="h-px w-6 bg-accent" />
+              Let&rsquo;s build together
+              <span aria-hidden className="h-px w-6 bg-accent" />
+            </div>
+            <h2 className="font-display text-3xl font-medium tracking-tight md:text-5xl">{title}</h2>
+            <p className="mx-auto mt-5 max-w-md font-light leading-relaxed text-muted">{body}</p>
+            <Link
+              href="/contact"
+              className="mt-10 inline-flex items-center gap-2 bg-accent px-8 py-3.5 text-sm font-medium uppercase tracking-[0.06em] text-accent-ink transition-colors hover:bg-accent/85"
+            >
+              {button} <ArrowRight size={14} />
+            </Link>
+          </div>
         </div>
-        <Link
-          href="/contact"
-          className="rounded bg-white px-6 py-3 text-sm font-semibold text-[#4f46e5] shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:shadow-xl dark:text-[#312e81]"
-        >
-          {button}
-        </Link>
       </div>
     </section>
   );

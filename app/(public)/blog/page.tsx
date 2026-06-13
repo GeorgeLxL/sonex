@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Section } from "@/components/public/sections";
 import { PageHero } from "@/components/public/page-hero";
@@ -22,42 +23,29 @@ export default async function BlogPage() {
     <>
     <PageHero title="Blog" sub="Engineering notes, product thinking and stories from the team." bg='blog' />
     <Section>
-      {(posts ?? []).length === 0 && (
-        <p className="text-sm text-muted">No posts yet — check back soon.</p>
+      {(posts ?? []).length === 0 ? (
+        <p className="text-sm font-light text-muted">No posts yet — check back soon.</p>
+      ) : (
+        <div className="grid gap-px border border-accent/15 bg-accent/15 sm:grid-cols-2 lg:grid-cols-3">
+          {(posts ?? []).map((p) => (
+            <Link
+              key={p.id}
+              href={`/blog/${p.slug}`}
+              className="group flex flex-col bg-bg p-7 transition-colors hover:bg-surface-2"
+            >
+              <div className="mb-5 flex items-center justify-between font-mono text-[0.65rem] uppercase tracking-[0.15em]">
+                <span className="text-accent">{p.author_name}</span>
+                <time className="text-muted">{formatDateHuman(p.published_at?.slice(0, 10))}</time>
+              </div>
+              <h3 className="font-display text-lg font-medium leading-snug transition-colors group-hover:text-accent">{p.title}</h3>
+              <p className="mt-3 line-clamp-3 text-sm font-light leading-relaxed text-muted">{p.excerpt}</p>
+              <span className="mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.1em] text-accent">
+                Read article <ArrowRight size={12} />
+              </span>
+            </Link>
+          ))}
+        </div>
       )}
-
-      <div className="gap-4 max-w-5xl mx-auto">
-        {(posts ?? []).map((p) => (
-          <Link
-            key={p.id}
-            href={`/blog/${p.slug}`}
-            className="group block sm:flex mb-5 overflow-hidden rounded border border-line/60 bg-surface shadow-md shadow-black/5 transition-all hover:-translate-y-1 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10"
-          >
-            {p.cover_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={p.cover_url}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="h-32 w-full sm:w-32 shrink-0 object-cover transition-transform group-hover:scale-[1.02]"
-              />
-            ) : (
-              <div className="flex h-32 w-full shrink-0 items-center justify-center bg-surface-2 text-4xl font-black text-line sm:w-32">
-                SX
-              </div>
-            )}
-            <div className="p-3 pr-8 w-full flex flex-col">
-              <h3 className="font-semibold group-hover:text-accent">{p.title}</h3>
-              <p className="mt-2 mb-4 line-clamp-2 text-sm text-muted">{p.excerpt}</p>
-              <div className="mt-auto flex items-center justify-between text-xs text-muted">
-                <span>{p.author_name}</span>
-                <time>{formatDateHuman(p.published_at?.slice(0, 10))}</time>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
     </Section>
     </>
   );

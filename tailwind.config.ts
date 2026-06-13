@@ -12,6 +12,11 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         display: ["var(--font-sora)", "var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-dmmono)", "ui-monospace", "monospace"],
+      },
+      borderRadius: {
+        // `rounded` resolves to 0 inside the luxury public theme (.lux).
+        DEFAULT: "var(--radius-card, 0.25rem)",
       },
       colors: {
         bg: "rgb(var(--bg) / <alpha-value>)",

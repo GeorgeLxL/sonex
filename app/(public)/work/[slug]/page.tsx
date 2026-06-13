@@ -56,25 +56,25 @@ export default async function CaseStudyPage({
             <ArrowLeft size={14} /> All work
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-accent md:text-5xl">
+          <h1 className="mt-5 font-display text-3xl font-medium tracking-tight md:text-5xl">
             {work.title}
           </h1>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             {service && (
               <Link
                 href={`/services#${service.slug}`}
-                className="rounded border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent hover:bg-accent/20"
+                className="border border-accent/25 px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-accent transition-colors hover:border-accent/60"
               >
                 {service.title}
               </Link>
             )}
             {work.client_name && (
-              <span className="text-sm text-muted">for {work.client_name}</span>
+              <span className="text-sm font-light text-muted">for {work.client_name}</span>
             )}
           </div>
 
           {work.summary && (
-            <p className="mt-5 text-lg font-medium text-muted">{work.summary}</p>
+            <p className="mt-6 font-display text-lg italic text-muted">{work.summary}</p>
           )}
 
           {work.cover_url && (
@@ -84,21 +84,21 @@ export default async function CaseStudyPage({
               alt={work.title}
               loading="lazy"
               decoding="async"
-              className="mt-8 w-full rounded object-cover"
+              className="mt-8 w-full border border-accent/15 object-cover"
             />
           )}
 
           <div className="mt-8 space-y-5">
             {paragraphs.map((p, i) => (
-              <p key={i} className="leading-relaxed text-ink/90">
+              <p key={i} className="font-light leading-relaxed text-ink/80">
                 {p}
               </p>
             ))}
           </div>
 
           {(work.technologies ?? []).length > 0 && (
-            <div className="mt-10 border-t border-line pt-8">
-              <h2 className="mb-4 text-lg font-bold">Technologies used</h2>
+            <div className="mt-10 border-t border-accent/15 pt-8">
+              <h2 className="mb-4 font-mono text-[0.68rem] uppercase tracking-[0.25em] text-accent">Technologies used</h2>
               <TechChips items={work.technologies as string[]} />
             </div>
           )}

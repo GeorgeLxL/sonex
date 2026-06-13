@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 /**
- * Shared hero for all public pages: halftone dot-wave background
- * (/hero-bg.svg) behind the title. `big` = home-page sizing.
+ * Shared hero for all public pages, luxury treatment: faint page artwork,
+ * gold radial glow, structural grid lines, serif display title.
+ * `big` = home-page sizing.
  */
 export function PageHero({
   title,
@@ -24,35 +25,36 @@ export function PageHero({
     <section className="relative overflow-hidden">
       <div
         aria-hidden
-        className={`absolute inset-0 bg-cover bg-center opacity-70 dark:opacity-40`}
+        className="absolute inset-0 bg-cover bg-center opacity-20 blur-[2px] dark:opacity-10"
         style={{
           backgroundImage: `url('/back/back-${pageBg}.jpg')`,
         }}
       />
-      {/* Scrim: fades the dots behind the text so copy stays readable. */}
+      {/* Structural grid lines + gold ambient glow */}
+      <div aria-hidden className="lux-grid-bg absolute inset-0" />
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-r from-bg via-bg/75 to-transparent"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgb(var(--accent)/0.08)_0%,transparent_70%)]"
       />
-      {/* Ambient glow */}
+      {/* Scrim: fades the artwork toward the page background at the bottom. */}
       <div
         aria-hidden
-        className="absolute -top-24 right-[8%] h-72 w-72 rounded-full bg-accent/15 blur-3xl"
+        className="absolute inset-0 bg-gradient-to-b from-bg/40 via-transparent to-bg"
       />
-      <div
-        aria-hidden
-        className="absolute -bottom-20 left-[30%] h-56 w-56 rounded-full bg-violet-500/10 blur-3xl"
-      />
-      <div className={`relative mx-auto max-w-6xl px-4 ${big ? "py-24 md:py-32" : "py-16 md:py-24"}`}>
+      <div className={`relative mx-auto max-w-6xl px-4 ${big ? "py-28 md:py-36" : "py-16 md:py-24"}`}>
         <div data-reveal className="in max-w-3xl">
+          <div className="mb-6 flex items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.25em] text-accent">
+            <span aria-hidden className="h-px w-8 bg-accent/60" />
+            Sonex-Digital
+          </div>
           <h1
-            className={`font-display font-bold tracking-tight ${big ? "text-4xl leading-[1.1] md:text-6xl" : "text-3xl md:text-5xl"}`}
+            className={`font-display font-medium tracking-tight ${big ? "text-4xl leading-[1.1] md:text-6xl" : "text-3xl md:text-5xl"}`}
           >
-            <span className="bg-gradient-to-br from-ink via-ink to-accent bg-clip-text text-transparent drop-shadow-[0_2px_12px_rgba(99,102,241,0.25)]">
-              {title}
-            </span>
+            {title}
           </h1>
-          {sub && <p className="mt-5 max-w-2xl text-lg font-medium text-ink/75">{sub}</p>}
+          {sub && (
+            <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed text-ink/70">{sub}</p>
+          )}
           {children}
         </div>
       </div>

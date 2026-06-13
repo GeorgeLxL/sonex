@@ -56,10 +56,10 @@ export default async function BlogPostPage({
             <ArrowLeft size={14} /> All posts
           </Link>
 
-          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-accent md:text-5xl">
+          <h1 className="mt-5 font-display text-3xl font-medium tracking-tight md:text-5xl">
             {post.title}
           </h1>
-          <time className="mt-3 block text-sm text-muted">
+          <time className="mt-4 block font-mono text-[0.7rem] uppercase tracking-[0.15em] text-accent">
             {formatDateHuman(post.published_at?.slice(0, 10))}
           </time>
 
@@ -70,25 +70,25 @@ export default async function BlogPostPage({
               alt={post.title}
               loading="lazy"
               decoding="async"
-              className="mt-8 w-full rounded object-cover"
+              className="mt-8 w-full border border-accent/15 object-cover"
             />
           )}
 
           <div className="mt-8 space-y-5">
             {paragraphs.map((p: string, i: number) => (
-              <p key={i} className="leading-relaxed text-ink/90">
+              <p key={i} className="font-light leading-relaxed text-ink/80">
                 {p}
               </p>
             ))}
           </div>
 
-          <div className="mt-10 flex items-center gap-3 border-t border-line pt-8">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-violet-500 text-sm font-bold text-white">
+          <div className="mt-10 flex items-center gap-4 border-t border-accent/15 pt-8">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center border border-accent/30 font-mono text-sm text-accent">
               {initials(post.author_name)}
             </span>
             <div>
-              <div className="text-xs uppercase tracking-wide text-muted">Written by</div>
-              <div className="text-sm font-semibold">{post.author_name}</div>
+              <div className="font-mono text-[0.65rem] uppercase tracking-[0.15em] text-muted">Written by</div>
+              <div className="mt-0.5 font-display text-base font-medium">{post.author_name}</div>
             </div>
           </div>
         </div>
